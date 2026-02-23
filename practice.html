@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Практикалық жұмыс</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .task-grid { display: grid; gap: 20px; max-width: 800px; margin: 0 auto; }
+        .task-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s;
+        }
+        .task-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .level-a { border-top: 3px solid #4af7b0; }
+        .level-b { border-top: 3px solid #f7c948; }
+        .level-c { border-top: 3px solid #f74a6a; }
+
+        .level-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 50px;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        .tag-a { background: rgba(74,247,176,0.1); color: #4af7b0; border: 1px solid rgba(74,247,176,0.3); }
+        .tag-b { background: rgba(247,201,72,0.1); color: #f7c948; border: 1px solid rgba(247,201,72,0.3); }
+        .tag-c { background: rgba(247,74,106,0.1); color: #f74a6a; border: 1px solid rgba(247,74,106,0.3); }
+
+        .task-number {
+            position: absolute;
+            top: 28px; right: 32px;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--border);
+            line-height: 1;
+        }
+
+        .task-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+        .task-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .answer-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            color: var(--text);
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .task-card.level-a .answer-btn:hover { background: rgba(74,247,176,0.2); border-color: #4af7b0; color: #4af7b0; }
+        .task-card.level-b .answer-btn:hover { background: rgba(247,201,72,0.2); border-color: #f7c948; color: #f7c948; }
+        .task-card.level-c .answer-btn:hover { background: rgba(247,74,106,0.2); border-color: #f74a6a; color: #f74a6a; }
+
+        .difficulty-dots {
+            display: flex; gap: 4px; margin-bottom: 16px;
+        }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .dot-filled-a { background: #4af7b0; }
+        .dot-filled-b { background: #f7c948; }
+        .dot-filled-c { background: #f74a6a; }
+        .dot-empty { background: var(--border); }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <button class="dark-mode-toggle" id="dark-mode-toggle"><span id="mode-icon">☀️</span></button>
+
+    <header>
+        <div class="header-badge">● 3 Деңгей</div>
+        <h1>Практикалық жұмыс</h1>
+        <p>Кодты іс жүзінде қолданып үйрен</p>
+    </header>
+
+    <div class="container">
+        <div class="task-grid">
+            <div class="task-card level-a">
+                <div class="task-number">01</div>
+                <div class="level-tag tag-a">● A деңгейі — Оңай</div>
+                <div class="difficulty-dots">
+                    <div class="dot dot-filled-a"></div>
+                    <div class="dot dot-empty"></div>
+                    <div class="dot dot-empty"></div>
+                </div>
+                <div class="task-title">Сәлемдесу</div>
+                <div class="task-desc">Пайдаланушыдан атын сұрап, оған <strong>"Сәлем, [аты]!"</strong> деп жауап беретін Python бағдарламасын жазыңыз. input() және print() функцияларын қолданыңыз.</div>
+                <a href="answer3.html" class="answer-btn">Жауабын көру →</a>
+            </div>
+
+            <div class="task-card level-b">
+                <div class="task-number">02</div>
+                <div class="level-tag tag-b">● B деңгейі — Орташа</div>
+                <div class="difficulty-dots">
+                    <div class="dot dot-filled-b"></div>
+                    <div class="dot dot-filled-b"></div>
+                    <div class="dot dot-empty"></div>
+                </div>
+                <div class="task-title">Сандарды салыстыру</div>
+                <div class="task-desc">Екі бүтін сан енгізіледі. <strong>if-elif-else</strong> операторын пайдаланып, қайсысы үлкен екенін анықтайтын бағдарлама жазыңыз.</div>
+                <a href="answer4.html" class="answer-btn">Жауабын көру →</a>
+            </div>
+
+            <div class="task-card level-c">
+                <div class="task-number">03</div>
+                <div class="level-tag tag-c">● C деңгейі — Қиын</div>
+                <div class="difficulty-dots">
+                    <div class="dot dot-filled-c"></div>
+                    <div class="dot dot-filled-c"></div>
+                    <div class="dot dot-filled-c"></div>
+                </div>
+                <div class="task-title">For циклі</div>
+                <div class="task-desc"><strong>for</strong> циклін пайдаланып, пайдаланушы енгізген санның 1-ден 10-ға дейінгі көбейту кестесін шығаратын бағдарлама жазыңыз.</div>
+                <a href="answer5.html" class="answer-btn">Жауабын көру →</a>
+            </div>
+        </div>
+
+        <div style="text-align:center; margin-top:40px;">
+            <a href="index.html" class="back-btn">← Басты бетке қайту</a>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('dark-mode-toggle');
+        const modeIcon = document.getElementById('mode-icon');
+        const body = document.body;
+        if (localStorage.getItem('dark-mode') !== 'disabled') { modeIcon.textContent = '☀️'; }
+        else { body.classList.add('light-mode'); modeIcon.textContent = '🌙'; }
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            if (body.classList.contains('light-mode')) { localStorage.setItem('dark-mode', 'disabled'); modeIcon.textContent = '🌙'; }
+            else { localStorage.setItem('dark-mode', 'enabled'); modeIcon.textContent = '☀️'; }
+        });
+        window.addEventListener('scroll', () => {
+            const scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+    </script>
+</body>
+</html>

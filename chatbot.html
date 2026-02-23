@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python AI Көмекші — Чатбот</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Unbounded:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+        .chat-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            height: calc(100vh - 200px);
+            min-height: 550px;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .chat-sidebar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .quick-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+            line-height: 1.4;
+        }
+
+        .quick-btn:hover {
+            background: rgba(124,106,247,0.1);
+            border-color: rgba(124,106,247,0.3);
+            color: var(--text);
+        }
+
+        .quick-btn .q-icon { font-size: 1rem; margin-bottom: 4px; display: block; }
+
+        /* ===== CHAT MAIN ===== */
+        .chat-main {
+            display: flex;
+            flex-direction: column;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--surface);
+        }
+
+        .bot-avatar {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, #7c6af7, #4af7b0);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .bot-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; right: -2px;
+            width: 10px; height: 10px;
+            background: #4af7b0;
+            border-radius: 50%;
+            border: 2px solid var(--surface);
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .bot-info .bot-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .bot-info .bot-status {
+            font-size: 0.72rem;
+            color: #4af7b0;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-messages::-webkit-scrollbar { width: 4px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        /* Messages */
+        .msg {
+            display: flex;
+            gap: 10px;
+            animation: msgIn 0.3s ease;
+            max-width: 85%;
+        }
+
+        @keyframes msgIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg.user { flex-direction: row-reverse; align-self: flex-end; }
+
+        .msg-avatar {
+            width: 32px; height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .msg.bot .msg-avatar { background: linear-gradient(135deg, #7c6af7, #4af7b0); }
+        .msg.user .msg-avatar { background: var(--surface2); border: 1px solid var(--border); }
+
+        .msg-bubble {
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .msg.bot .msg-bubble {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-top-left-radius: 4px;
+            color: var(--text);
+        }
+
+        .msg.user .msg-bubble {
+            background: linear-gradient(135deg, #7c6af7, #5a4fd4);
+            color: white;
+            border-top-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(124,106,247,0.3);
+        }
+
+        .msg-bubble code {
+            display: inline;
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            border: none;
+            margin: 0;
+            white-space: normal;
+        }
+
+        .msg-bubble pre {
+            background: #0d0d14;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 14px;
+            overflow-x: auto;
+            margin: 8px 0;
+        }
+
+        .msg-bubble pre code {
+            display: block;
+            background: transparent;
+            padding: 0;
+            font-size: 0.82rem;
+            white-space: pre;
+            color: #f8f8f2;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 14px 16px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            border-top-left-radius: 4px;
+        }
+
+        .typing-dots span {
+            width: 6px; height: 6px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: typingDot 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingDot {
+            0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+            40% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Input area */
+        .chat-input-area {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .chat-textarea {
+            flex: 1;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 16px;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: 'DM Sans', sans-serif;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s;
+            max-height: 120px;
+            min-height: 48px;
+            line-height: 1.5;
+        }
+
+        .chat-textarea:focus { border-color: var(--primary); }
+
+        .send-btn {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #7c6af7, #5a4fd4);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(124,106,247,0.3);
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(124,106,247,0.5); }
+        .send-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+        .char-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Space Mono', monospace;
+            margin-top: 6px;
+            text-align: center;
+        }
+
+        /* Welcome screen */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            gap: 16px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .welcome-icon {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #7c6af7, #4af7b0);
+            border-radius: 24px;
+            width: 80px; height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .welcome-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .welcome-desc {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            max-width: 360px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .chat-layout { grid-template-columns: 1fr; height: auto; }
+            .chat-sidebar { display: none; }
+            .chat-main { height: calc(100vh - 200px); min-height: 500px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar"></div>
+    <button class="dark-mode-toggle" id="dark-mode-toggle"><span id="mode-icon">☀️</span></button>
+
+    <header>
+        <div class="header-badge">● AI Жасанды интеллект</div>
+        <h1>Python Көмекші</h1>
+        <p>Сұрақтарыңа жауап беретін AI чатбот</p>
+    </header>
+
+    <div class="container">
+        <div class="chat-layout">
+            <!-- Sidebar -->
+            <div class="chat-sidebar">
+                <div class="sidebar-title">Жылдам сұрақтар</div>
+
+                <button class="quick-btn" onclick="askQuick('Python дегеніміз не және ол неге пайдалы?')">
+                    <span class="q-icon">🐍</span>
+                    Python дегеніміз не?
+                </button>
+                <button class="quick-btn" onclick="askQuick('Python-да for цикл қалай жазылады? Мысал көрсет')">
+                    <span class="q-icon">🔄</span>
+                    For цикл мысалы
+                </button>
+                <button class="quick-btn" onclick="askQuick('Python-да if-else оператор қалай қолданылады?')">
+                    <span class="q-icon">🔀</span>
+                    If-else оператор
+                </button>
+                <button class="quick-btn" onclick="askQuick('Python-да айнымалылар қалай анықталады? int, float, str, bool типтерін түсіндір')">
+                    <span class="q-icon">📦</span>
+                    Деректер типтері
+                </button>
+                <button class="quick-btn" onclick="askQuick('Python-да function (функция) қалай жасалады? def кілт сөзін түсіндір')">
+                    <span class="q-icon">⚙️</span>
+                    Функция жасау
+                </button>
+                <button class="quick-btn" onclick="askQuick('Python-да input() және print() функциялары қалай жұмыс істейді?')">
+                    <span class="q-icon">⌨️</span>
+                    Input & Print
+                </button>
+                <button class="quick-btn" onclick="askQuick('Python-да while цикл мен for цикл айырмашылығы неде?')">
+                    <span class="q-icon">🆚</span>
+                    While vs For
+                </button>
+                <button class="quick-btn" onclick="askQuick('Python синтаксис қатесін қалай түзетуге болады? Мысал бер')">
+                    <span class="q-icon">🐛</span>
+                    Қателерді түзету
+                </button>
+
+                <div class="sidebar-title" style="margin-top:8px;">Статистика</div>
+                <div style="background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px; font-size:0.8rem; color:var(--text-muted);">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                        <span>Сұрақтар</span>
+                        <span id="qCount" style="color:var(--primary); font-family:'Space Mono',monospace;">0</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Сессия</span>
+                        <span id="sessionTime" style="color:var(--accent); font-family:'Space Mono',monospace;">0 мин</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main chat -->
+            <div class="chat-main">
+                <div class="chat-header">
+                    <div class="bot-avatar">🤖</div>
+                    <div class="bot-info">
+                        <div class="bot-name">PyBot — Python Көмекші</div>
+                        <div class="bot-status">● Онлайн · 7-сынып деңгейі</div>
+                    </div>
+                    <button onclick="clearChat()" style="margin-left:auto; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:6px 12px; color:var(--text-muted); cursor:pointer; font-size:0.75rem; font-family:'Space Mono',monospace; transition:all 0.2s;" onmouseover="this.style.borderColor='#f74a6a';this.style.color='#f74a6a'" onmouseout="this.style.borderColor='';this.style.color=''">
+                        ✕ Тазалау
+                    </button>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="welcome-screen" id="welcomeScreen">
+                        <div class="welcome-icon">🤖</div>
+                        <div class="welcome-title">Сәлем! Мен PyBot</div>
+                        <div class="welcome-desc">Python тілі бойынша кез келген сұрағыңды қой. Мен 7-сынып бағдарламасына сай қазақша жауап беремін!</div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="input-row">
+                        <textarea
+                            class="chat-textarea"
+                            id="chatInput"
+                            placeholder="Python туралы сұрағыңды жаз..."
+                            rows="1"
+                            onkeydown="handleKey(event)"
+                            oninput="autoResize(this)"
+                        ></textarea>
+                        <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+                    </div>
+                    <div class="char-hint">Enter — жіберу &nbsp;·&nbsp; Shift+Enter — жаңа жол</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align:center; margin-top:20px;">
+            <a href="index.html" class="back-btn">← Басты бетке қайту</a>
+        </div>
+    </div>
+
+    <script>
+        const SYSTEM_PROMPT = `Сен PyBot — Python программалау тілін оқытатын AI көмекшісін. 7-сынып оқушыларына арналған электронды оқулық жүйесінің бөлігісің.
+
+Міндетті ережелер:
+1. БАРЛЫҚ жауаптарды ҚАЗАҚ тілінде бер
+2. Қарапайым, түсінікті тілде жаз — 7-сынып оқушысына лайық
+3. Python кодтарын \`\`\`python ... \`\`\` блоктарына орналастыр
+4. Қысқа және нақты болу — ұзын лекция емес
+5. Мысалдарды міндетті түрде бер
+6. Жылы, достық тонда жаз
+7. Python-ға қатысты емес сұрақтарға: "Мен тек Python туралы сұрақтарға жауап беремін 😊" де
+8. Алгоритм, айнымалы, цикл, функция, шарт — осы тақырыптарды жақсы түсіндір`;
+
+        let messages = [];
+        let questionCount = 0;
+        let startTime = Date.now();
+
+        // Session timer
+        setInterval(() => {
+            const mins = Math.floor((Date.now() - startTime) / 60000);
+            document.getElementById('sessionTime').textContent = mins + ' мин';
+        }, 30000);
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // Hide welcome
+            const welcome = document.getElementById('welcomeScreen');
+            if (welcome) welcome.remove();
+
+            // Add user message
+            appendMessage('user', text);
+            messages.push({ role: 'user', content: text });
+            input.value = '';
+            input.style.height = '';
+            questionCount++;
+            document.getElementById('qCount').textContent = questionCount;
+
+            // Disable send
+            document.getElementById('sendBtn').disabled = true;
+
+            // Show typing
+            const typingEl = showTyping();
+
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 1000,
+                        system: SYSTEM_PROMPT,
+                        messages: messages
+                    })
+                });
+
+                const data = await response.json();
+                typingEl.remove();
+
+                const reply = data.content?.[0]?.text || 'Кешіріңіз, қате орын алды. Қайтадан сұраңыз.';
+                messages.push({ role: 'assistant', content: reply });
+                appendMessage('bot', reply);
+
+            } catch (err) {
+                typingEl.remove();
+                appendMessage('bot', '⚠️ Желі қатесі орын алды. Интернет байланысын тексеріңіз.');
+            }
+
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('chatInput').focus();
+        }
+
+        function appendMessage(role, text) {
+            const container = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg ${role}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'msg-avatar';
+            avatar.textContent = role === 'bot' ? '🤖' : '👤';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'msg-bubble';
+            bubble.innerHTML = formatMessage(text);
+
+            msgDiv.appendChild(avatar);
+            msgDiv.appendChild(bubble);
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function formatMessage(text) {
+            // Code blocks
+            text = text.replace(/```python([\s\S]*?)```/g, (_, code) =>
+                `<pre><code>${escapeHtml(code.trim())}</code></pre>`);
+            text = text.replace(/```([\s\S]*?)```/g, (_, code) =>
+                `<pre><code>${escapeHtml(code.trim())}</code></pre>`);
+            // Inline code
+            text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+            // Bold
+            text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            // Newlines
+            text = text.replace(/\n/g, '<br>');
+            return text;
+        }
+
+        function escapeHtml(t) {
+            return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        function showTyping() {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'msg bot typing-indicator';
+            div.innerHTML = `
+                <div class="msg-avatar">🤖</div>
+                <div class="typing-dots">
+                    <span></span><span></span><span></span>
+                </div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return div;
+        }
+
+        function handleKey(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function autoResize(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+        }
+
+        function askQuick(q) {
+            document.getElementById('chatInput').value = q;
+            sendMessage();
+        }
+
+        function clearChat() {
+            messages = [];
+            questionCount = 0;
+            document.getElementById('qCount').textContent = '0';
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = `
+                <div class="welcome-screen" id="welcomeScreen">
+                    <div class="welcome-icon">🤖</div>
+                    <div class="welcome-title">Сәлем! Мен PyBot</div>
+                    <div class="welcome-desc">Python тілі бойынша кез келген сұрағыңды қой. Мен 7-сынып бағдарламасына сай қазақша жауап беремін!</div>
+                </div>`;
+        }
+
+        // Dark mode
+        const toggleBtn = document.getElementById('dark-mode-toggle');
+        const modeIcon = document.getElementById('mode-icon');
+        const body = document.body;
+        if (localStorage.getItem('dark-mode') !== 'disabled') { modeIcon.textContent = '☀️'; }
+        else { body.classList.add('light-mode'); modeIcon.textContent = '🌙'; }
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            if (body.classList.contains('light-mode')) { localStorage.setItem('dark-mode', 'disabled'); modeIcon.textContent = '🌙'; }
+            else { localStorage.setItem('dark-mode', 'enabled'); modeIcon.textContent = '☀️'; }
+        });
+    </script>
+</body>
+</html>

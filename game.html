@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Ойыны - Санды тап</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .game-wrapper { max-width: 520px; margin: 0 auto; }
+        .game-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -100px; left: 50%;
+            transform: translateX(-50%);
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(124,106,247,0.1) 0%, transparent 70%);
+        }
+        .game-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .game-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 32px; }
+
+        .attempts-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        .att-block { text-align: center; }
+        .att-num {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .att-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-top: 4px; font-family: 'Space Mono', monospace; }
+        .att-divider { width: 1px; height: 50px; background: var(--border); }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .guess-input {
+            flex: 1;
+            padding: 14px 18px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1.2rem;
+            font-family: 'Space Mono', monospace;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .guess-input:focus { border-color: var(--primary); }
+        .game-btn {
+            padding: 14px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px var(--primary-glow);
+        }
+        .game-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px var(--primary-glow); }
+
+        .hint-bar {
+            height: 6px;
+            background: var(--surface2);
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .hint-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s, background 0.5s;
+            width: 50%;
+            background: var(--primary);
+        }
+
+        .message {
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 12px;
+            transition: all 0.3s;
+        }
+        .msg-hint { color: var(--text-muted); background: transparent; }
+        .msg-high { color: #f74a6a; background: rgba(247,74,106,0.1); }
+        .msg-low { color: #4af7b0; background: rgba(74,247,176,0.1); }
+        .msg-win { color: #f7c948; background: rgba(247,201,72,0.1); font-size: 1.1rem; }
+
+        .history {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .hist-item {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+        .reset-btn {
+            margin-top: 20px;
+            padding: 10px 24px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        .reset-btn:hover { border-color: var(--primary); color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <button class="dark-mode-toggle" id="dark-mode-toggle"><span id="mode-icon">☀️</span></button>
+
+    <header>
+        <div class="header-badge">● Интерактивті</div>
+        <h1>Санды тап!</h1>
+        <p>Алгоритмдік ойлауды дамыт</p>
+    </header>
+
+    <div class="container">
+        <div class="game-wrapper">
+            <div class="game-card">
+                <div class="game-title">🎯 Жасырын сан</div>
+                <div class="game-desc">1 мен 100 арасындағы санды тауып көр</div>
+
+                <div class="attempts-display">
+                    <div class="att-block">
+                        <div class="att-num" id="attNum">0</div>
+                        <div class="att-label">Әрекет</div>
+                    </div>
+                    <div class="att-divider"></div>
+                    <div class="att-block">
+                        <div class="att-num" id="bestNum">—</div>
+                        <div class="att-label">Рекорд</div>
+                    </div>
+                </div>
+
+                <div class="hint-bar">
+                    <div class="hint-fill" id="hintFill" style="width:50%;"></div>
+                </div>
+
+                <div class="input-row">
+                    <input type="number" class="guess-input" id="guessInput" min="1" max="100" placeholder="1–100" onkeydown="if(event.key==='Enter') checkGuess()">
+                    <button class="game-btn" onclick="checkGuess()">Тексеру</button>
+                </div>
+
+                <div class="message msg-hint" id="gameMessage">Санды болжаңыз...</div>
+
+                <div class="history" id="history"></div>
+
+                <button class="reset-btn" onclick="resetGame()">↺ Жаңа ойын</button>
+            </div>
+
+            <div style="text-align:center; margin-top:24px;">
+                <a href="index.html" class="back-btn">← Басты бетке қайту</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let randomNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0;
+        let best = localStorage.getItem('gameBest') ? parseInt(localStorage.getItem('gameBest')) : null;
+        let guesses = [];
+        let gameOver = false;
+
+        if (best) document.getElementById('bestNum').textContent = best;
+
+        function checkGuess() {
+            if (gameOver) return;
+            const input = document.getElementById('guessInput');
+            const val = parseInt(input.value);
+            if (!val || val < 1 || val > 100) { shakeInput(); return; }
+
+            attempts++;
+            guesses.push(val);
+            document.getElementById('attNum').textContent = attempts;
+            updateHistory();
+
+            const msg = document.getElementById('gameMessage');
+            const fill = document.getElementById('hintFill');
+
+            if (val === randomNumber) {
+                msg.className = 'message msg-win';
+                msg.textContent = `🎉 Дұрыс! ${attempts} әрекетте таптыңыз!`;
+                fill.style.width = '100%';
+                fill.style.background = 'linear-gradient(90deg, #4af7b0, #7c6af7)';
+                gameOver = true;
+                if (!best || attempts < best) {
+                    best = attempts;
+                    localStorage.setItem('gameBest', best);
+                    document.getElementById('bestNum').textContent = best;
+                }
+            } else if (val > randomNumber) {
+                msg.className = 'message msg-high';
+                msg.textContent = '⬇️ Кішірек сан жаз...';
+                const pct = ((val - 1) / 99) * 100;
+                fill.style.width = (100 - pct) + '%';
+                fill.style.background = '#f74a6a';
+            } else {
+                msg.className = 'message msg-low';
+                msg.textContent = '⬆️ Үлкенірек сан жаз...';
+                const pct = ((val - 1) / 99) * 100;
+                fill.style.width = pct + '%';
+                fill.style.background = '#4af7b0';
+            }
+            input.value = '';
+            input.focus();
+        }
+
+        function updateHistory() {
+            const h = document.getElementById('history');
+            h.innerHTML = guesses.map(g => `<span class="hist-item">${g}</span>`).join('');
+        }
+
+        function shakeInput() {
+            const input = document.getElementById('guessInput');
+            input.style.borderColor = '#f74a6a';
+            setTimeout(() => input.style.borderColor = '', 500);
+        }
+
+        function resetGame() {
+            randomNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0; guesses = []; gameOver = false;
+            document.getElementById('attNum').textContent = '0';
+            document.getElementById('gameMessage').className = 'message msg-hint';
+            document.getElementById('gameMessage').textContent = 'Санды болжаңыз...';
+            document.getElementById('hintFill').style.width = '50%';
+            document.getElementById('hintFill').style.background = 'var(--primary)';
+            document.getElementById('history').innerHTML = '';
+            document.getElementById('guessInput').value = '';
+            document.getElementById('guessInput').focus();
+        }
+
+        // Dark mode
+        const toggleBtn = document.getElementById('dark-mode-toggle');
+        const modeIcon = document.getElementById('mode-icon');
+        const body = document.body;
+        if (localStorage.getItem('dark-mode') !== 'disabled') { modeIcon.textContent = '☀️'; }
+        else { body.classList.add('light-mode'); modeIcon.textContent = '🌙'; }
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            if (body.classList.contains('light-mode')) { localStorage.setItem('dark-mode', 'disabled'); modeIcon.textContent = '🌙'; }
+            else { localStorage.setItem('dark-mode', 'enabled'); modeIcon.textContent = '☀️'; }
+        });
+    </script>
+</body>
+</html>

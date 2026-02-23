@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ҚМЖ - Пайтон тілінде алгоритмді программалау</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .kmj-paper { max-width: 950px; margin: 0 auto; }
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .meta-item {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 20px;
+        }
+        .meta-label {
+            font-size: 0.7rem;
+            font-family: 'Space Mono', monospace;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+        .meta-value { font-weight: 600; font-size: 0.95rem; color: var(--text); }
+        .goals-list { list-style: none; padding: 0; }
+        .goals-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .goals-list li span.num {
+            min-width: 24px;
+            height: 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            flex-shrink: 0;
+        }
+        .timeline { margin-top: 16px; }
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 80px 1fr 1fr 1fr 1fr;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            transition: background 0.2s;
+        }
+        .timeline-item:hover { background: var(--surface2); }
+        .timeline-item.header {
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            font-size: 0.75rem;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 0.5px;
+            border: none;
+        }
+        .time-badge {
+            background: rgba(124,106,247,0.12);
+            color: var(--primary);
+            border-radius: 8px;
+            padding: 4px 8px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .code-example {
+            margin-top: 20px;
+            position: relative;
+        }
+        .code-label {
+            position: absolute;
+            top: 12px; right: 16px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        h2 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 1rem;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <button class="dark-mode-toggle" id="dark-mode-toggle"><span id="mode-icon">☀️</span></button>
+
+    <header>
+        <div class="header-badge">● Сабақ жоспары</div>
+        <h1>Қысқа мерзімді жоспар</h1>
+        <p>Информатика · 7-сынып</p>
+    </header>
+
+    <div class="container">
+        <div class="kmj-paper">
+            <div class="lesson-box">
+                <h2>Сабақ мәліметтері</h2>
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <div class="meta-label">Пән</div>
+                        <div class="meta-value">Информатика</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Сынып</div>
+                        <div class="meta-value">7-сынып</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Тақырып</div>
+                        <div class="meta-value">Пайтон тілінде алгоритмді программалау</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Сабақ түрі</div>
+                        <div class="meta-value">Аралас (теория + практика)</div>
+                    </div>
+                </div>
+
+                <h2>Сабақ мақсаттары</h2>
+                <ul class="goals-list">
+                    <li><span class="num">1</span> Оқушыларға алгоритм түсінігін және оны Пайтон тілінде жүзеге асыру жолдарын көрсету.</li>
+                    <li><span class="num">2</span> Логикалық ойлау дағдыларын дамыту және алгоритм түрлерімен таныстыру.</li>
+                    <li><span class="num">3</span> Пайтон тілінде қарапайым бағдарламаларды құрастыруға үйрету.</li>
+                </ul>
+
+                <h2 style="margin-top:24px;">Сабақ барысы</h2>
+                <div class="timeline">
+                    <div class="timeline-item header">
+                        <div>Уақыт</div>
+                        <div>Кезең</div>
+                        <div>Мұғалім</div>
+                        <div>Оқушы</div>
+                        <div>Ресурс</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time-badge">5 мин</div>
+                        <div>Ұйымдастыру</div>
+                        <div>Сәлемдесу, мақсатпен таныстыру</div>
+                        <div>Сабаққа дайындық</div>
+                        <div>—</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time-badge">10 мин</div>
+                        <div>Теория</div>
+                        <div>Алгоритм және Python ерекшеліктерін түсіндіру</div>
+                        <div>Тыңдау, сұрақ қою</div>
+                        <div>Слайд</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time-badge">15 мин</div>
+                        <div>Алг. түрлері</div>
+                        <div>Сызықтық, тармақталған, циклдік алгоритмдер</div>
+                        <div>Дәптерге жазу</div>
+                        <div>Тақта</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time-badge">10 мин</div>
+                        <div>Видео</div>
+                        <div>Алгоритм мысалын көрсету</div>
+                        <div>Көру, жазу</div>
+                        <div>Проектор</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time-badge">25 мин</div>
+                        <div>Практика</div>
+                        <div>3 деңгейлі тапсырмалар</div>
+                        <div>Компьютерде код жазу</div>
+                        <div>Python IDE</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time-badge">10 мин</div>
+                        <div>Тест</div>
+                        <div>Теория және практикалық сұрақтар</div>
+                        <div>Жауап беру</div>
+                        <div>Google Form</div>
+                    </div>
+                </div>
+
+                <h2 style="margin-top:24px;">Практикалық тапсырма мысалы</h2>
+                <div class="code-example">
+                    <span class="code-label">Python 3.x</span>
+                    <code># Екі санның қосындысын табу
+a = int(input("Бірінші санды енгізіңіз: "))
+b = int(input("Екінші санды енгізіңіз: "))
+kosindi = a + b
+print("Қосынды:", kosindi)</code>
+                </div>
+
+                <div style="text-align:center; margin-top:36px;">
+                    <a href="index.html" class="back-btn">← Басты бетке қайту</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('dark-mode-toggle');
+        const modeIcon = document.getElementById('mode-icon');
+        const body = document.body;
+        if (localStorage.getItem('dark-mode') !== 'disabled') { modeIcon.textContent = '☀️'; }
+        else { body.classList.add('light-mode'); modeIcon.textContent = '🌙'; }
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            if (body.classList.contains('light-mode')) { localStorage.setItem('dark-mode', 'disabled'); modeIcon.textContent = '🌙'; }
+            else { localStorage.setItem('dark-mode', 'enabled'); modeIcon.textContent = '☀️'; }
+        });
+        window.addEventListener('scroll', () => {
+            const scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Тест - 7 сынып</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .test-wrapper { max-width: 680px; margin: 0 auto; }
+        .test-header {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .test-counter {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .score-display {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+        .question-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 16px;
+            transition: border-color 0.3s;
+        }
+        .question-card.answered { border-color: rgba(124,106,247,0.3); }
+        .q-num {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .q-text {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+        .options { display: flex; flex-direction: column; gap: 8px; }
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .option-label:hover {
+            border-color: rgba(124,106,247,0.4);
+            background: rgba(124,106,247,0.08);
+        }
+        .option-label input { display: none; }
+        .option-label.selected {
+            border-color: var(--primary);
+            background: rgba(124,106,247,0.12);
+            color: var(--text);
+        }
+        .option-indicator {
+            width: 20px; height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .option-label.selected .option-indicator {
+            border-color: var(--primary);
+            background: var(--primary);
+        }
+        .option-label.correct { border-color: #4af7b0 !important; background: rgba(74,247,176,0.12) !important; }
+        .option-label.wrong { border-color: #f74a6a !important; background: rgba(247,74,106,0.12) !important; }
+
+        .check-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px var(--primary-glow);
+            margin-top: 8px;
+        }
+        .check-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 35px var(--primary-glow); }
+        .check-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+
+        .result-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+        .result-score {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+        .result-score.perfect { background: linear-gradient(135deg, #4af7b0, #7c6af7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .result-score.good { background: linear-gradient(135deg, #f7c948, #f77c4a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .result-msg { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <button class="dark-mode-toggle" id="dark-mode-toggle"><span id="mode-icon">☀️</span></button>
+
+    <header>
+        <div class="header-badge">● 3 Сұрақ</div>
+        <h1>Біліміңді тексер</h1>
+        <p>Python тілі бойынша тест</p>
+    </header>
+
+    <div class="container">
+        <div class="test-wrapper">
+            <div class="test-header">
+                <div>
+                    <div class="test-counter">ТЕСТ ПРОГРЕСІ</div>
+                    <div style="font-weight:600;font-size:0.9rem;margin-top:4px;color:var(--text)">Python негіздері</div>
+                </div>
+                <div class="score-display" id="scoreDisplay">0/3</div>
+            </div>
+
+            <div class="question-card" id="qc1">
+                <div class="q-num">СҰРАҚ 01</div>
+                <div class="q-text">Python тілінде экранға шығару командасы қандай?</div>
+                <div class="options" id="opts1">
+                    <label class="option-label" onclick="selectOption(this, 'q1', 0)">
+                        <div class="option-indicator"></div>
+                        <span>input()</span>
+                    </label>
+                    <label class="option-label" onclick="selectOption(this, 'q1', 1)">
+                        <div class="option-indicator"></div>
+                        <span>print()</span>
+                    </label>
+                    <label class="option-label" onclick="selectOption(this, 'q1', 0)">
+                        <div class="option-indicator"></div>
+                        <span>output()</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question-card" id="qc2">
+                <div class="q-num">СҰРАҚ 02</div>
+                <div class="q-text">Мәліметтерді енгізу үшін қолданылатын функция қандай?</div>
+                <div class="options" id="opts2">
+                    <label class="option-label" onclick="selectOption(this, 'q2', 1)">
+                        <div class="option-indicator"></div>
+                        <span>input()</span>
+                    </label>
+                    <label class="option-label" onclick="selectOption(this, 'q2', 0)">
+                        <div class="option-indicator"></div>
+                        <span>int()</span>
+                    </label>
+                    <label class="option-label" onclick="selectOption(this, 'q2', 0)">
+                        <div class="option-indicator"></div>
+                        <span>write()</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="question-card" id="qc3">
+                <div class="q-num">СҰРАҚ 03</div>
+                <div class="q-text">Бүтін сандар типі Python-да қалай аталады?</div>
+                <div class="options" id="opts3">
+                    <label class="option-label" onclick="selectOption(this, 'q3', 0)">
+                        <div class="option-indicator"></div>
+                        <span>str</span>
+                    </label>
+                    <label class="option-label" onclick="selectOption(this, 'q3', 0)">
+                        <div class="option-indicator"></div>
+                        <span>float</span>
+                    </label>
+                    <label class="option-label" onclick="selectOption(this, 'q3', 1)">
+                        <div class="option-indicator"></div>
+                        <span>int</span>
+                    </label>
+                </div>
+            </div>
+
+            <button class="check-btn" onclick="checkTest()" id="checkBtn">Нәтижені тексеру</button>
+
+            <div class="result-box" id="resultBox">
+                <div class="result-score" id="resultScore"></div>
+                <div class="result-msg" id="resultMsg"></div>
+                <a href="index.html" class="back-btn" style="margin-right:12px;">← Басты бет</a>
+                <button onclick="resetTest()" class="back-btn" style="cursor:pointer;border:none;">↺ Қайтадан</button>
+            </div>
+
+            <div style="text-align:center; margin-top:20px;">
+                <a href="index.html" class="back-btn">← Басты бетке қайту</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const answers = { q1: null, q2: null, q3: null };
+        const correct = { q1: 1, q2: 1, q3: 1 };
+
+        function selectOption(el, q, val) {
+            document.getElementById('opts' + q.slice(1)).querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+            el.classList.add('selected');
+            answers[q] = val;
+            document.getElementById('qc' + q.slice(1)).classList.add('answered');
+            updateScore();
+        }
+
+        function updateScore() {
+            let s = 0;
+            for (let q in answers) { if (answers[q] === correct[q]) s++; }
+            document.getElementById('scoreDisplay').textContent = s + '/3';
+        }
+
+        function checkTest() {
+            if (answers.q1 === null || answers.q2 === null || answers.q3 === null) {
+                alert('Барлық сұрақтарға жауап беріңіз!'); return;
+            }
+            let score = 0;
+            ['q1','q2','q3'].forEach((q, i) => {
+                const labels = document.getElementById('opts' + (i+1)).querySelectorAll('.option-label');
+                labels.forEach(l => {
+                    const isSelected = l.classList.contains('selected');
+                    const isCorrect = parseInt(l.getAttribute('onclick').match(/,\s*(\d+)\)/)[1]) === correct[q];
+                    if (isCorrect) { l.classList.add('correct'); }
+                    if (isSelected && !isCorrect) { l.classList.add('wrong'); }
+                });
+                if (answers[q] === correct[q]) score++;
+            });
+
+            const rb = document.getElementById('resultBox');
+            rb.style.display = 'block';
+            const rs = document.getElementById('resultScore');
+            rs.textContent = score + '/3';
+            rs.className = 'result-score ' + (score === 3 ? 'perfect' : 'good');
+            document.getElementById('resultMsg').textContent = score === 3
+                ? '🌟 Керемет! Барлық сұрақтарды дұрыс шештіңіз!'
+                : `Нәтижеңіз: ${score}/3. Тағы да тырысып көріңіз!`;
+
+            document.getElementById('checkBtn').disabled = true;
+            rb.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetTest() {
+            ['q1','q2','q3'].forEach(q => answers[q] = null);
+            document.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected','correct','wrong'));
+            document.querySelectorAll('.question-card').forEach(c => c.classList.remove('answered'));
+            document.getElementById('resultBox').style.display = 'none';
+            document.getElementById('checkBtn').disabled = false;
+            document.getElementById('scoreDisplay').textContent = '0/3';
+        }
+
+        // Dark mode
+        const toggleBtn = document.getElementById('dark-mode-toggle');
+        const modeIcon = document.getElementById('mode-icon');
+        const body = document.body;
+        if (localStorage.getItem('dark-mode') !== 'disabled') { modeIcon.textContent = '☀️'; }
+        else { body.classList.add('light-mode'); modeIcon.textContent = '🌙'; }
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            if (body.classList.contains('light-mode')) { localStorage.setItem('dark-mode', 'disabled'); modeIcon.textContent = '🌙'; }
+            else { localStorage.setItem('dark-mode', 'enabled'); modeIcon.textContent = '☀️'; }
+        });
+    </script>
+</body>
+</html>

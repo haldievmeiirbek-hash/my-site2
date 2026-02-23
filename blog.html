@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блог — Python кеңестері</title>
+    <meta name="description" content="Python программалау туралы кеңестер, жаңалықтар және код мысалдары">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .blog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 960px; margin: 0 auto; }
+        @media(max-width:700px) { .blog-grid { grid-template-columns: 1fr; } }
+        .post-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+        .post-card:hover { transform: translateY(-8px); border-color: rgba(124,106,247,0.3); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+        .post-thumb {
+            aspect-ratio: 16/7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .post-thumb::before { content:''; position:absolute; inset:0; }
+        .thumb-1::before { background: linear-gradient(135deg, #1a0a3e, #2d1b69); }
+        .thumb-2::before { background: linear-gradient(135deg, #0a1a2e, #1b3d69); }
+        .thumb-3::before { background: linear-gradient(135deg, #1a2e0a, #3d6920); }
+        .thumb-4::before { background: linear-gradient(135deg, #2e1a0a, #6e3d1b); }
+        .thumb-5::before { background: linear-gradient(135deg, #2e0a1a, #6e1b3d); }
+        .thumb-6::before { background: linear-gradient(135deg, #0a2e2e, #1b6e6e); }
+        .post-thumb span { position: relative; z-index: 1; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
+        .post-body { padding: 20px 22px; }
+        .post-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .post-tag { font-size: 0.65rem; padding: 3px 10px; border-radius: 50px; font-family: 'Space Mono', monospace; letter-spacing: 1px; background: rgba(124,106,247,0.1); color: var(--primary); border: 1px solid rgba(124,106,247,0.2); }
+        .post-title { font-family: 'Unbounded', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 10px; line-height: 1.4; }
+        .post-excerpt { font-size: 0.83rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 14px; }
+        .post-meta { display: flex; align-items: center; gap: 12px; font-size: 0.72rem; color: var(--text-muted); font-family: 'Space Mono', monospace; }
+        .post-meta span { display: flex; align-items: center; gap: 4px; }
+        .read-more { color: var(--primary); text-decoration: none; font-size: 0.8rem; font-weight: 600; transition: gap 0.2s; display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; }
+        .read-more:hover { gap: 10px; }
+
+        /* Modal */
+        .post-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; overflow-y:auto; padding:20px; }
+        .post-modal.open { display:flex; align-items:flex-start; justify-content:center; }
+        .modal-inner { max-width:700px; width:100%; background:var(--surface); border:1px solid var(--border); border-radius:24px; overflow:hidden; margin:20px auto; }
+        .modal-header { padding:20px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+        .modal-body { padding:28px 32px; }
+        .modal-body h2 { font-family:'Unbounded',sans-serif; font-size:1.2rem; margin-bottom:16px; }
+        .modal-body p { color:var(--text-muted); font-size:0.9rem; line-height:1.8; margin-bottom:14px; }
+        .modal-body code { font-size:0.82rem; margin:14px 0; }
+        .modal-close { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1.3rem; transition:color 0.2s; }
+        .modal-close:hover { color:#f74a6a; }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">🐍 PyLearn KZ</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Басты бет</a>
+            <a href="sabaq.html" class="nav-link">Сабақ</a>
+            <a href="practice.html" class="nav-link">Практика</a>
+            <a href="editor.html" class="nav-link">Редактор</a>
+            <a href="chatbot.html" class="nav-link highlight">🤖 AI Чат</a>
+            <a href="blog.html" class="nav-link active">Блог</a>
+            <a href="faq.html" class="nav-link">FAQ</a>
+            <a href="reviews.html" class="nav-link">Пікірлер</a>
+            <a href="contact.html" class="nav-link">Байланыс</a>
+        </div>
+        <div class="nav-right">
+            <button class="dark-mode-toggle" id="dark-mode-toggle"><span id="mode-icon">☀️</span></button>
+            <button class="hamburger" id="hamburger" onclick="document.getElementById('mobileMenu').classList.toggle('open')">☰</button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html" class="nav-link">Басты бет</a>
+        <a href="chatbot.html" class="nav-link highlight">🤖 AI Чат</a>
+        <a href="blog.html" class="nav-link active">Блог</a>
+        <a href="faq.html" class="nav-link">FAQ</a>
+        <a href="reviews.html" class="nav-link">Пікірлер</a>
+    </div>
+
+    <header>
+        <div class="header-badge">● 6 Мақала</div>
+        <h1>Блог</h1>
+        <p>Python кеңестері, жаңалықтар, код мысалдары</p>
+    </header>
+
+    <div class="container">
+        <div class="blog-grid">
+            <div class="post-card" onclick="openPost(0)">
+                <div class="post-thumb thumb-1"><span>🐍</span></div>
+                <div class="post-body">
+                    <div class="post-tags"><span class="post-tag">НЕГІЗДЕР</span><span class="post-tag">7-СЫНЫП</span></div>
+                    <div class="post-title">Python дегеніміз не және неліктен үйрену керек?</div>
+                    <div class="post-excerpt">Python — бүгінгі күні ең танымал программалау тілдерінің бірі. Оны үйрену неліктен маңызды?</div>
+                    <div class="post-meta"><span>📅 2024</span><span>⏱ 3 мин</span><span>👁 128</span></div>
+                    <a class="read-more">Оқу →</a>
+                </div>
+            </div>
+
+            <div class="post-card" onclick="openPost(1)">
+                <div class="post-thumb thumb-2"><span>🔄</span></div>
+                <div class="post-body">
+                    <div class="post-tags"><span class="post-tag">ЦИКЛ</span><span class="post-tag">FOR</span></div>
+                    <div class="post-title">For циклін 5 минутта меңгер</div>
+                    <div class="post-excerpt">For циклі Python-дағы ең жиі қолданылатын құрылымдардың бірі. Мысалдармен оңай түсіндірілген нұсқаулық.</div>
+                    <div class="post-meta"><span>📅 2024</span><span>⏱ 5 мин</span><span>👁 94</span></div>
+                    <a class="read-more">Оқу →</a>
+                </div>
+            </div>
+
+            <div class="post-card" onclick="openPost(2)">
+                <div class="post-thumb thumb-3"><span>🔀</span></div>
+                <div class="post-body">
+                    <div class="post-tags"><span class="post-tag">ШАРТ</span><span class="post-tag">IF-ELSE</span></div>
+                    <div class="post-title">If-else операторын дұрыс қолдану</div>
+                    <div class="post-excerpt">Тармақталған алгоритмдер — программалаудың жүрегі. If, elif, else операторларын мысалмен үйреніңіз.</div>
+                    <div class="post-meta"><span>📅 2024</span><span>⏱ 4 мин</span><span>👁 76</span></div>
+                    <a class="read-more">Оқу →</a>
+                </div>
+            </div>
+
+            <div class="post-card" onclick="openPost(3)">
+                <div class="post-thumb thumb-4"><span>📦</span></div>
+                <div class="post-body">
+                    <div class="post-tags"><span class="post-tag">АЙНЫМАЛЫ</span><span class="post-tag">ТИПТЕР</span></div>
+                    <div class="post-title">Деректер типтері: int, float, str, bool</div>
+                    <div class="post-excerpt">Python-да мәліметтерді дұрыс сақтау — маңызды дағды. Барлық типтерді мысалмен қарастырамыз.</div>
+                    <div class="post-meta"><span>📅 2024</span><span>⏱ 4 мин</span><span>👁 88</span></div>
+                    <a class="read-more">Оқу →</a>
+                </div>
+            </div>
+
+            <div class="post-card" onclick="openPost(4)">
+                <div class="post-thumb thumb-5"><span>⚙️</span></div>
+                <div class="post-body">
+                    <div class="post-tags"><span class="post-tag">ФУНКЦИЯ</span><span class="post-tag">DEF</span></div>
+                    <div class="post-title">Функциялар — кодты ретке келтірудің жолы</div>
+                    <div class="post-excerpt">def кілт сөзімен өз функцияларыңды жаса! Кодты қайталамай, таза ұстаудың тәсілін үйрен.</div>
+                    <div class="post-meta"><span>📅 2024</span><span>⏱ 6 мин</span><span>👁 61</span></div>
+                    <a class="read-more">Оқу →</a>
+                </div>
+            </div>
+
+            <div class="post-card" onclick="openPost(5)">
+                <div class="post-thumb thumb-6"><span>🐛</span></div>
+                <div class="post-body">
+                    <div class="post-tags"><span class="post-tag">DEBUGGING</span><span class="post-tag">ҚАТЕ</span></div>
+                    <div class="post-title">Python қателерін қалай табасың?</div>
+                    <div class="post-excerpt">SyntaxError, TypeError, NameError — осы қателер не дегенді білдіреді және қалай түзетіледі?</div>
+                    <div class="post-meta"><span>📅 2024</span><span>⏱ 5 мин</span><span>👁 103</span></div>
+                    <a class="read-more">Оқу →</a>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align:center;margin-top:36px;">
+            <a href="index.html" class="back-btn">← Басты бетке қайту</a>
+        </div>
+    </div>
+
+    <!-- Post modal -->
+    <div class="post-modal" id="postModal">
+        <div class="modal-inner">
+            <div class="modal-header">
+                <span id="modalTag" style="font-size:0.72rem;font-family:'Space Mono',monospace;color:var(--primary);letter-spacing:2px;"></span>
+                <button class="modal-close" onclick="closePost()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+    const posts = [
+        {
+            tag: 'НЕГІЗДЕР · 3 МИН',
+            title: 'Python дегеніміз не және неліктен үйрену керек?',
+            body: `<p>Python — 1991 жылы Гвидо ван Россум жасаған жоғары деңгейлі программалау тілі. Бүгінде ол <strong>Data Science, AI, веб-разработка, автоматизация</strong> салаларында кеңінен қолданылады.</p>
+<p><strong>Неліктен Python?</strong></p>
+<p>🟢 Оқуға оңай — синтаксис табиғи тілге жақын<br>🟢 Кең қолданыс аясы — сайттан бастап AI-ға дейін<br>🟢 Үлкен қоғамдастық — кез-келген сұраққа жауап табасың<br>🟢 Тегін және ашық бастапқы код</p>
+<code># Алғашқы Python бағдарламаңыз
+print("Сәлем, Әлем!")
+print("Python үйренемін!")
+</code>
+<p>Осы қарапайым код Python-ның негізін көрсетеді — print() функциясы экранға мәтін шығарады. Сіз де осыдан бастай аласыз!</p>`
+        },
+        {
+            tag: 'FOR ЦИКЛ · 5 МИН',
+            title: 'For циклін 5 минутта меңгер',
+            body: `<p>For циклі — белгілі бір санды рет қайталануды іске асырады. Мысалы, 1-ден 10-ға дейін санауды 10 жол код жазбай-ақ 2 жолда шешесің.</p>
+<code># 1-ден 5-ке дейін санау
+for i in range(1, 6):
+    print(i)
+
+# Шығуы: 1, 2, 3, 4, 5</code>
+<p><strong>range() функциясы:</strong></p>
+<p>range(5) → 0, 1, 2, 3, 4<br>range(1, 6) → 1, 2, 3, 4, 5<br>range(0, 10, 2) → 0, 2, 4, 6, 8</p>
+<code># Тізімдегі элементтерді өңдеу
+жемістер = ["алма", "алмұрт", "жүзім"]
+for жеміс in жемістер:
+    print(жеміс + " дәмді!")
+</code>`
+        },
+        {
+            tag: 'IF-ELSE · 4 МИН',
+            title: 'If-else операторын дұрыс қолдану',
+            body: `<p>Тармақталған алгоритмде бағдарлама шартқа байланысты әртүрлі жолмен орындалады. Python-да бұл үшін <strong>if, elif, else</strong> операторлары қолданылады.</p>
+<code>жас = int(input("Жасыңызды енгізіңіз: "))
+
+if жас < 7:
+    print("Мектепке баруыңыз ерте")
+elif жас <= 17:
+    print("Сіз мектеп оқушысысыз")
+elif жас <= 22:
+    print("Сіз студентсіз")
+else:
+    print("Сіз ересексіз")
+</code>
+<p><strong>Ескерту:</strong> elif дегеніміз "else if" — яғни бірінші шарт орындалмаса, келесіні тексер деген сөз. Ол қанша болса да пайдалануға болады.</p>`
+        },
+        {
+            tag: 'ДЕРЕКТЕР ТИПТЕРІ · 4 МИН',
+            title: 'Деректер типтері: int, float, str, bool',
+            body: `<p>Python-да барлық айнымалының типі бар. Дұрыс типті пайдалану — дұрыс бағдарлама жазудың негізі.</p>
+<code>x = 10          # int — бүтін сан
+y = 3.14        # float — нақты сан
+ат = "Python"   # str — жол (мәтін)
+тексеру = True  # bool — логикалық
+
+# Типті білу үшін:
+print(type(x))      # &lt;class 'int'&gt;
+print(type(ат))     # &lt;class 'str'&gt;
+</code>
+<p><strong>Конвертация (түрлендіру):</strong></p>
+<code>сан = int("42")       # жолды санға
+мәтін = str(100)      # санды жолға
+нақты = float("3.14") # жолды нақты санға
+</code>`
+        },
+        {
+            tag: 'ФУНКЦИЯ · 6 МИН',
+            title: 'Функциялар — кодты ретке келтірудің жолы',
+            body: `<p>Функция — бір немесе бірнеше жолды кодты атаулы блокқа топтастырады. Бұл кодты қайталамауға және тазартуға мүмкіндік береді.</p>
+<code># Функция анықтау
+def сәлемдесу(аты):
+    print("Сәлем, " + аты + "!")
+
+# Функцияны шақыру
+сәлемдесу("Айгерім")
+сәлемдесу("Данияр")
+</code>
+<p>Функциялар мән қайтара алады:</p>
+<code>def косу(a, b):
+    return a + b
+
+нәтиже = косу(5, 3)
+print(нәтиже)  # 8
+</code>
+<p>Функциялар кодты қайталамауға (DRY принципі — Don't Repeat Yourself) және тестілеуге ыңғайлы жасайды.</p>`
+        },
+        {
+            tag: 'DEBUGGING · 5 МИН',
+            title: 'Python қателерін қалай табасың?',
+            body: `<p>Программалауда қате жасау — қалыпты жағдай. Маңыздысы — қатені тез табу және түзету.</p>
+<p><strong>Жиі кездесетін қателер:</strong></p>
+<p>🔴 <strong>SyntaxError</strong> — синтаксис қатесі (тырнақша, қос нүкте ұмытылған)<br>🟠 <strong>NameError</strong> — айнымалы анықталмаған<br>🟡 <strong>TypeError</strong> — деректер типі сәйкес емес<br>🔵 <strong>IndexError</strong> — тізім шегінен шыққан</p>
+<code># SyntaxError мысалы:
+print("Сәлем"    # ← жабылмаған жақша!
+
+# NameError мысалы:
+print(сан)  # ← сан анықталмаған!
+
+# Дұрыс жазу:
+сан = 10
+print(сан)  # ✓
+</code>
+<p>Қате хабарламасын оқыңыз — Python қандай жолда және не қате екенін нақты айтады!</p>`
+        }
+    ];
+
+    function openPost(i) {
+        const p = posts[i];
+        document.getElementById('modalTag').textContent = p.tag;
+        document.getElementById('modalBody').innerHTML = `<h2>${p.title}</h2>${p.body}`;
+        document.getElementById('postModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePost() {
+        document.getElementById('postModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    const toggleBtn = document.getElementById('dark-mode-toggle');
+    const modeIcon = document.getElementById('mode-icon');
+    const body = document.body;
+    if (localStorage.getItem('dark-mode') !== 'disabled') { modeIcon.textContent = '☀️'; }
+    else { body.classList.add('light-mode'); modeIcon.textContent = '🌙'; }
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('light-mode');
+        if (body.classList.contains('light-mode')) { localStorage.setItem('dark-mode', 'disabled'); modeIcon.textContent = '🌙'; }
+        else { localStorage.setItem('dark-mode', 'enabled'); modeIcon.textContent = '☀️'; }
+    });
+    window.addEventListener('scroll', () => {
+        const s = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+        document.getElementById('progressBar').style.width = (s||0) + '%';
+    });
+    </script>
+</body>
+</html>

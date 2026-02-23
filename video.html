@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Видео сабақ - Python</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .video-wrapper-outer { max-width: 800px; margin: 0 auto; }
+        .video-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            background: #000;
+        }
+        .video-container video, .video-container iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+        .video-info {
+            padding: 28px 32px;
+        }
+        .video-tag {
+            display: inline-block;
+            background: rgba(124,106,247,0.12);
+            color: var(--primary);
+            border: 1px solid rgba(124,106,247,0.3);
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+        .video-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+        .video-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <button class="dark-mode-toggle" id="dark-mode-toggle"><span id="mode-icon">☀️</span></button>
+    <header>
+        <div class="header-badge">● Видео сабақ</div>
+        <h1>Видео сабақтар</h1>
+        <p>Python тілінде программалау негіздері</p>
+    </header>
+    <div class="container">
+        <div class="video-wrapper-outer">
+            <div class="video-card">
+                <div class="video-container">
+                    <video controls>
+                        <source src="videoplayback.mp4" type="video/mp4">
+                        Браузер видеоны қолдамайды.
+                    </video>
+                </div>
+                <div class="video-info">
+                    <div class="video-tag">▶ Python 3.x</div>
+                    <div class="video-title">Алгоритмдерді программалау — Негіздер</div>
+                    <div class="video-desc">Бұл видеода 7-сынып бағдарламасына сәйкес Python тілінің негізгі алгоритмдері мен практикалық қолданылуы көрсетілген. Сызықтық, тармақталған және циклдік алгоритмдер.</div>
+                </div>
+            </div>
+            <div style="text-align:center; margin-top:24px;">
+                <a href="index.html" class="back-btn">← Басты бетке қайту</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        const toggleBtn = document.getElementById('dark-mode-toggle');
+        const modeIcon = document.getElementById('mode-icon');
+        const body = document.body;
+        if (localStorage.getItem('dark-mode') !== 'disabled') { modeIcon.textContent = '☀️'; }
+        else { body.classList.add('light-mode'); modeIcon.textContent = '🌙'; }
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            if (body.classList.contains('light-mode')) { localStorage.setItem('dark-mode', 'disabled'); modeIcon.textContent = '🌙'; }
+            else { localStorage.setItem('dark-mode', 'enabled'); modeIcon.textContent = '☀️'; }
+        });
+    </script>
+</body>
+</html>

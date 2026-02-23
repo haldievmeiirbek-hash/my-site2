@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyLearn KZ — Python 7-сынып | Электронды оқулық</title>
+    <meta name="description" content="Python тілінде алгоритмдерді программалауды үйренің — 7-сынып үшін арналған интерактивті электронды оқулық. Видео сабақтар, тесттер, AI чатбот.">
+    <meta name="keywords" content="Python, программалау, алгоритм, 7-сынып, информатика, қазақша, оқулық">
+    <meta property="og:title" content="PyLearn KZ — Python Электронды Оқулық">
+    <meta property="og:description" content="Python тілінде программалауды үйрен — 7-сынып үшін арналған заманауи оқулық">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            padding: 60px 20px 80px;
+            text-align: center;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .hero-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px; height: 400px;
+            background: radial-gradient(ellipse, rgba(124,106,247,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero h1 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.6rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff 0%, #b8b0ff 40%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.15;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+        .hero-sub {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            max-width: 520px;
+            margin: 0 auto 36px;
+            line-height: 1.7;
+        }
+        .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 50px; }
+        .btn-primary {
+            padding: 14px 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px var(--primary-glow);
+            letter-spacing: 0.5px;
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 35px var(--primary-glow); }
+        .btn-outline {
+            padding: 14px 32px;
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+
+        /* Intro video */
+        .intro-video-card {
+            max-width: 640px;
+            margin: 0 auto 60px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            position: relative;
+        }
+        .intro-video-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(124,106,247,0.1), transparent);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .video-placeholder {
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #1a1a2e, #0d0d1a);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .video-placeholder::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(124,106,247,0.03) 10px, rgba(124,106,247,0.03) 20px);
+        }
+        .play-btn {
+            width: 72px; height: 72px;
+            background: rgba(124,106,247,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            transition: all 0.3s;
+            box-shadow: 0 8px 30px rgba(124,106,247,0.5);
+            z-index: 1;
+        }
+        .video-placeholder:hover .play-btn { transform: scale(1.1); background: var(--primary); }
+        .video-placeholder p { color: var(--text-muted); font-size: 0.85rem; z-index: 1; font-family: 'Space Mono', monospace; letter-spacing: 1px; }
+        .video-info { padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
+        .video-info-text { font-size: 0.85rem; color: var(--text-muted); }
+        .video-info-title { font-weight: 600; color: var(--text); font-size: 0.9rem; }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 50px;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px 16px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .stat-card:hover { border-color: rgba(124,106,247,0.3); transform: translateY(-4px); }
+        .stat-num { font-family: 'Unbounded', sans-serif; font-size: 1.8rem; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Space Mono', monospace; }
+
+        /* About teacher */
+        .about-strip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        .about-strip::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--primary), var(--accent));
+        }
+        .teacher-avatar {
+            width: 80px; height: 80px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #7c6af7, #4af7b0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .teacher-info h3 { font-family: 'Unbounded', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+        .teacher-info p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+        .teacher-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .teacher-tag { font-size: 0.7rem; padding: 3px 10px; border-radius: 50px; background: rgba(124,106,247,0.1); color: var(--primary); border: 1px solid rgba(124,106,247,0.2); font-family: 'Space Mono', monospace; }
+
+        /* New badge */
+        .new-badge { position: absolute; top: 14px; right: 44px; background: linear-gradient(135deg, #f74a6a, #f7c948); color: white; font-size: 0.58rem; font-family: 'Space Mono', monospace; font-weight: 700; padding: 3px 8px; border-radius: 50px; letter-spacing: 1px; text-transform: uppercase; z-index: 2; }
+
+        /* Python animation */
+        .py-anim {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 50px;
+        }
+        .py-pill {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            animation: floatPill 3s ease-in-out infinite;
+            transition: all 0.3s;
+            cursor: default;
+        }
+        .py-pill:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-4px); }
+        .py-pill:nth-child(1){animation-delay:0s}.py-pill:nth-child(2){animation-delay:.3s}.py-pill:nth-child(3){animation-delay:.6s}
+        .py-pill:nth-child(4){animation-delay:.9s}.py-pill:nth-child(5){animation-delay:1.2s}.py-pill:nth-child(6){animation-delay:1.5s}
+        @keyframes floatPill { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+        .py-pill span { color: var(--accent); }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .about-strip { flex-direction: column; text-align: center; }
+            .about-strip::before { left:0; top:0; right:0; bottom:auto; width:auto; height:4px; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">🐍 PyLearn KZ</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link active" data-i18n="nav_home">Басты бет</a>
+            <a href="sabaq.html" class="nav-link" data-i18n="nav_lesson">Сабақ</a>
+            <a href="practice.html" class="nav-link" data-i18n="nav_practice">Практика</a>
+            <a href="editor.html" class="nav-link" data-i18n="nav_editor">Редактор</a>
+            <a href="chatbot.html" class="nav-link highlight" data-i18n="nav_ai">🤖 AI Чат</a>
+            <a href="blog.html" class="nav-link" data-i18n="nav_blog">Блог</a>
+            <a href="faq.html" class="nav-link" data-i18n="nav_faq">FAQ</a>
+            <a href="reviews.html" class="nav-link" data-i18n="nav_reviews">Пікірлер</a>
+            <a href="about.html" class="nav-link" data-i18n="nav_about">Мен туралы</a>
+            <a href="contact.html" class="nav-link" data-i18n="nav_contact">Байланыс</a>
+        </div>
+        <div class="nav-right">
+            <div class="lang-picker" id="langPicker">
+                <button class="lang-btn" onclick="toggleLang()">🌐 <span id="langLabel">ҚАЗ</span></button>
+                <div class="lang-dropdown" id="langDropdown">
+                    <div class="lang-option active" onclick="setLang('kk')">🇰🇿 Қазақша</div>
+                    <div class="lang-option" onclick="setLang('ru')">🇷🇺 Русский</div>
+                    <div class="lang-option" onclick="setLang('en')">🇬🇧 English</div>
+                </div>
+            </div>
+            <button class="dark-mode-toggle" id="dark-mode-toggle"><span id="mode-icon">☀️</span></button>
+            <button class="hamburger" id="hamburger" onclick="toggleMobile()">☰</button>
+        </div>
+    </nav>
+
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html" class="nav-link" data-i18n="nav_home">Басты бет</a>
+        <a href="sabaq.html" class="nav-link" data-i18n="nav_lesson">Сабақ барысы</a>
+        <a href="practice.html" class="nav-link" data-i18n="nav_practice">Практика</a>
+        <a href="editor.html" class="nav-link" data-i18n="nav_editor">Код редактор</a>
+        <a href="chatbot.html" class="nav-link highlight" data-i18n="nav_ai">🤖 AI Чатбот</a>
+        <a href="blog.html" class="nav-link" data-i18n="nav_blog">Блог</a>
+        <a href="faq.html" class="nav-link" data-i18n="nav_faq">FAQ</a>
+        <a href="reviews.html" class="nav-link" data-i18n="nav_reviews">Пікірлер</a>
+        <a href="about.html" class="nav-link" data-i18n="nav_about">Мен туралы</a>
+        <a href="contact.html" class="nav-link" data-i18n="nav_contact">Кері байланыс</a>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-glow"></div>
+        <div class="header-badge">● Python 3.x · 7-сынып · Тегін</div>
+        <h1 data-i18n="hero_title">Python тілін<br>бірге үйренейік</h1>
+        <p class="hero-sub" data-i18n="hero_sub">Алгоритмдерді программалаудың негіздерін оқып, видео сабақтар мен интерактивті тапсырмалар арқылы тәжірибе жинаңыз.</p>
+        <div class="hero-btns">
+            <a href="sabaq.html" class="btn-primary" data-i18n="hero_btn1">Оқуды бастау →</a>
+            <a href="chatbot.html" class="btn-outline" data-i18n="hero_btn2">🤖 AI Сұра</a>
+        </div>
+
+        <!-- Intro video -->
+        <div class="intro-video-card">
+            <div class="video-placeholder" onclick="openVideo()">
+                <div class="play-btn">▶</div>
+                <p data-i18n="video_label">КІРІСПЕ ВИДЕО · 3 МИН</p>
+            </div>
+            <div class="video-info">
+                <span style="font-size:1.5rem;">🎬</span>
+                <div>
+                    <div class="video-info-title" data-i18n="video_title">Python-ға қош келдіңіз! — Толық таныстыру</div>
+                    <div class="video-info-text" data-i18n="video_desc">Сайтпен, мазмұнмен және оқу жолымен танысыңыз</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Python pills animation -->
+        <div class="py-anim">
+            <div class="py-pill"><span>if</span> шарт:</div>
+            <div class="py-pill"><span>for</span> i in range(10):</div>
+            <div class="py-pill"><span>print</span>("Сәлем!")</div>
+            <div class="py-pill">x = <span>int</span>(input())</div>
+            <div class="py-pill"><span>def</span> функция():</div>
+            <div class="py-pill"><span>while</span> True:</div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-num">12</div><div class="stat-label" data-i18n="stat1">Бөлім</div></div>
+            <div class="stat-card"><div class="stat-num">3</div><div class="stat-label" data-i18n="stat2">Деңгей</div></div>
+            <div class="stat-card"><div class="stat-num">AI</div><div class="stat-label" data-i18n="stat3">Чатбот</div></div>
+            <div class="stat-card"><div class="stat-num">∞</div><div class="stat-label" data-i18n="stat4">Мүмкіндік</div></div>
+        </div>
+
+        <!-- About teacher strip -->
+        <div class="about-strip">
+            <div class="teacher-avatar">👨‍💻</div>
+            <div class="teacher-info">
+                <h3 data-i18n="teacher_name">Информатика мұғалімінің сайты</h3>
+                <p data-i18n="teacher_desc">7-сынып оқушыларына арналған толық Python бағдарламасы. Тәжірибелі мұғалімнің авторлық материалдары негізінде жасалған интерактивті оқулық.</p>
+                <div class="teacher-tags">
+                    <span class="teacher-tag">Python 3.x</span>
+                    <span class="teacher-tag">Алгоритм</span>
+                    <span class="teacher-tag">7-сынып</span>
+                    <span class="teacher-tag">ҚМЖ</span>
+                </div>
+            </div>
+            <a href="about.html" class="btn-outline" style="flex-shrink:0;" data-i18n="teacher_btn">Толығырақ →</a>
+        </div>
+
+        <div class="section-label" data-i18n="nav_sections">Барлық бөлімдер</div>
+
+        <!-- Main nav grid -->
+        <nav class="menu-grid">
+            <a href="chatbot.html" class="card">
+                <span class="new-badge">🆕 AI</span>
+                <div class="card-arrow">→</div>
+                <div class="icon">🤖</div>
+                <h3 data-i18n="card_ai">AI Чатбот</h3>
+                <p data-i18n="card_ai_d">Python сұрақтарыңа жасанды интеллект жауап береді</p>
+            </a>
+            <a href="editor.html" class="card">
+                <span class="new-badge">💻 ЖАҢА</span>
+                <div class="card-arrow">→</div>
+                <div class="icon">⌨️</div>
+                <h3 data-i18n="card_editor">Код Редактор</h3>
+                <p data-i18n="card_editor_d">Браузерде Python кодын жазып, іске қос</p>
+            </a>
+            <a href="sabaq.html" class="card">
+                <div class="card-arrow">→</div>
+                <div class="icon">📘</div>
+                <h3 data-i18n="card_lesson">Сабақ барысы</h3>
+                <p data-i18n="card_lesson_d">Толық теориялық мәліметтер мен алгоритмдер</p>
+            </a>
+            <a href="practice.html" class="card">
+                <div class="card-arrow">→</div>
+                <div class="icon">💻</div>
+                <h3 data-i18n="card_practice">Практикалық жұмыс</h3>
+                <p data-i18n="card_practice_d">3 деңгейлі код жазу тапсырмалары</p>
+            </a>
+            <a href="test.html" class="card">
+                <div class="card-arrow">→</div>
+                <div class="icon">📝</div>
+                <h3 data-i18n="card_test">Тест</h3>
+                <p data-i18n="card_test_d">Python бойынша білімді тексеру</p>
+            </a>
+            <a href="video.html" class="card">
+                <div class="card-arrow">→</div>
+                <div class="icon">🎥</div>
+                <h3 data-i18n="card_video">Видео сабақ</h3>
+                <p data-i18n="card_video_d">Көрнекі мультимедиялық сабақтар</p>
+            </a>
+            <a href="game.html" class="card">
+                <div class="card-arrow">→</div>
+                <div class="icon">🎮</div>
+                <h3 data-i18n="card_game">Ойын</h3>
+                <p data-i18n="card_game_d">Санды тап — логикалық мини-ойын</p>
+            </a>
+            <a href="blog.html" class="card">
+                <span class="new-badge">📰 ЖАҢА</span>
+                <div class="card-arrow">→</div>
+                <div class="icon">📰</div>
+                <h3 data-i18n="card_blog">Блог</h3>
+                <p data-i18n="card_blog_d">Python жаңалықтары, кеңестер, код мысалдары</p>
+            </a>
+            <a href="faq.html" class="card">
+                <span class="new-badge">❓ ЖАҢА</span>
+                <div class="card-arrow">→</div>
+                <div class="icon">❓</div>
+                <h3 data-i18n="card_faq">FAQ</h3>
+                <p data-i18n="card_faq_d">Жиі қойылатын сұрақтар мен жауаптар</p>
+            </a>
+            <a href="reviews.html" class="card">
+                <span class="new-badge">⭐ ЖАҢА</span>
+                <div class="card-arrow">→</div>
+                <div class="icon">⭐</div>
+                <h3 data-i18n="card_reviews">Пікірлер</h3>
+                <p data-i18n="card_reviews_d">Оқушылардың пікірлері мен бағалары</p>
+            </a>
+            <a href="glossary.html" class="card">
+                <div class="card-arrow">→</div>
+                <div class="icon">📖</div>
+                <h3 data-i18n="card_glossary">Глоссарий</h3>
+                <p data-i18n="card_glossary_d">Python терминдер сөздігі + іздеу</p>
+            </a>
+            <a href="kmj.html" class="card">
+                <div class="card-arrow">→</div>
+                <div class="icon">📄</div>
+                <h3 data-i18n="card_kmj">ҚМЖ</h3>
+                <p data-i18n="card_kmj_d">Қысқа мерзімді жоспар</p>
+            </a>
+        </nav>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-social">
+            <a href="#" title="Instagram">📸</a>
+            <a href="#" title="TikTok">🎵</a>
+            <a href="#" title="YouTube">▶️</a>
+            <a href="#" title="Telegram">✈️</a>
+        </div>
+        <p>© 2024 PyLearn KZ · Информатика пәні · 7-сынып</p>
+    </footer>
+
+    <!-- Video modal -->
+    <div id="videoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;" onclick="closeVideo()">
+        <div style="max-width:700px;width:90%;background:var(--surface);border-radius:20px;overflow:hidden;border:1px solid var(--border);" onclick="event.stopPropagation()">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);">
+                <span style="font-weight:600;font-size:0.9rem;" data-i18n="video_title">Python-ға қош келдіңіз!</span>
+                <button onclick="closeVideo()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.3rem;">✕</button>
+            </div>
+            <video id="modalVideo" controls style="width:100%;display:block;">
+                <source src="videoplayback.mp4" type="video/mp4">
+            </video>
+        </div>
+    </div>
+
+    <script>
+    // ===== i18n TRANSLATIONS =====
+    const translations = {
+        kk: {
+            nav_home:'Басты бет', nav_lesson:'Сабақ', nav_practice:'Практика',
+            nav_editor:'Редактор', nav_ai:'🤖 AI Чат', nav_blog:'Блог',
+            nav_faq:'FAQ', nav_reviews:'Пікірлер', nav_about:'Мен туралы', nav_contact:'Байланыс',
+            hero_title:'Python тілін<br>бірге үйренейік',
+            hero_sub:'Алгоритмдерді программалаудың негіздерін оқып, интерактивті тапсырмалар арқылы тәжірибе жинаңыз.',
+            hero_btn1:'Оқуды бастау →', hero_btn2:'🤖 AI Сұра',
+            video_label:'КІРІСПЕ ВИДЕО · 3 МИН',
+            video_title:'Python-ға қош келдіңіз! — Толық таныстыру',
+            video_desc:'Сайтпен, мазмұнмен және оқу жолымен танысыңыз',
+            stat1:'Бөлім', stat2:'Деңгей', stat3:'Чатбот', stat4:'Мүмкіндік',
+            teacher_name:'Информатика мұғалімінің сайты',
+            teacher_desc:'7-сынып оқушыларына арналған толық Python бағдарламасы. Тәжірибелі мұғалімнің авторлық материалдары негізінде жасалған интерактивті оқулық.',
+            teacher_btn:'Толығырақ →',
+            nav_sections:'Барлық бөлімдер',
+            card_ai:'AI Чатбот', card_ai_d:'Python сұрақтарыңа жасанды интеллект жауап береді',
+            card_editor:'Код Редактор', card_editor_d:'Браузерде Python кодын жазып, іске қос',
+            card_lesson:'Сабақ барысы', card_lesson_d:'Толық теориялық мәліметтер мен алгоритмдер',
+            card_practice:'Практикалық жұмыс', card_practice_d:'3 деңгейлі код жазу тапсырмалары',
+            card_test:'Тест', card_test_d:'Python бойынша білімді тексеру',
+            card_video:'Видео сабақ', card_video_d:'Көрнекі мультимедиялық сабақтар',
+            card_game:'Ойын', card_game_d:'Санды тап — логикалық мини-ойын',
+            card_blog:'Блог', card_blog_d:'Python жаңалықтары, кеңестер, код мысалдары',
+            card_faq:'FAQ', card_faq_d:'Жиі қойылатын сұрақтар мен жауаптар',
+            card_reviews:'Пікірлер', card_reviews_d:'Оқушылардың пікірлері мен бағалары',
+            card_glossary:'Глоссарий', card_glossary_d:'Python терминдер сөздігі + іздеу',
+            card_kmj:'ҚМЖ', card_kmj_d:'Қысқа мерзімді жоспар',
+        },
+        ru: {
+            nav_home:'Главная', nav_lesson:'Урок', nav_practice:'Практика',
+            nav_editor:'Редактор', nav_ai:'🤖 AI Чат', nav_blog:'Блог',
+            nav_faq:'FAQ', nav_reviews:'Отзывы', nav_about:'О себе', nav_contact:'Контакт',
+            hero_title:'Учим Python<br>вместе',
+            hero_sub:'Изучайте основы программирования алгоритмов и получайте опыт через интерактивные задания.',
+            hero_btn1:'Начать обучение →', hero_btn2:'🤖 Спросить AI',
+            video_label:'ВВОДНОЕ ВИДЕО · 3 МИН',
+            video_title:'Добро пожаловать в Python! — Полное введение',
+            video_desc:'Познакомьтесь с сайтом, содержанием и путём обучения',
+            stat1:'Разделов', stat2:'Уровней', stat3:'Чатбот', stat4:'Возможности',
+            teacher_name:'Сайт учителя информатики',
+            teacher_desc:'Полная программа Python для учеников 7 класса. Интерактивный учебник на основе авторских материалов опытного учителя.',
+            teacher_btn:'Подробнее →',
+            nav_sections:'Все разделы',
+            card_ai:'AI Чатбот', card_ai_d:'Искусственный интеллект отвечает на ваши вопросы по Python',
+            card_editor:'Редактор кода', card_editor_d:'Пиши и запускай Python код прямо в браузере',
+            card_lesson:'Ход урока', card_lesson_d:'Полные теоретические материалы и алгоритмы',
+            card_practice:'Практическая работа', card_practice_d:'Задания по написанию кода 3-х уровней',
+            card_test:'Тест', card_test_d:'Проверь знания по Python',
+            card_video:'Видеоурок', card_video_d:'Наглядные мультимедийные уроки',
+            card_game:'Игра', card_game_d:'Угадай число — логическая мини-игра',
+            card_blog:'Блог', card_blog_d:'Новости Python, советы, примеры кода',
+            card_faq:'FAQ', card_faq_d:'Часто задаваемые вопросы и ответы',
+            card_reviews:'Отзывы', card_reviews_d:'Отзывы и оценки учеников',
+            card_glossary:'Глоссарий', card_glossary_d:'Словарь терминов Python + поиск',
+            card_kmj:'КСП', card_kmj_d:'Краткосрочный план',
+        },
+        en: {
+            nav_home:'Home', nav_lesson:'Lesson', nav_practice:'Practice',
+            nav_editor:'Editor', nav_ai:'🤖 AI Chat', nav_blog:'Blog',
+            nav_faq:'FAQ', nav_reviews:'Reviews', nav_about:'About', nav_contact:'Contact',
+            hero_title:'Learn Python<br>Together',
+            hero_sub:'Study the fundamentals of algorithm programming and gain experience through interactive tasks.',
+            hero_btn1:'Start Learning →', hero_btn2:'🤖 Ask AI',
+            video_label:'INTRO VIDEO · 3 MIN',
+            video_title:'Welcome to Python! — Full Introduction',
+            video_desc:'Get acquainted with the site, content and learning path',
+            stat1:'Sections', stat2:'Levels', stat3:'Chatbot', stat4:'Possibilities',
+            teacher_name:'Computer Science Teacher Website',
+            teacher_desc:'Complete Python program for grade 7 students. An interactive textbook based on the author\'s materials of an experienced teacher.',
+            teacher_btn:'Learn More →',
+            nav_sections:'All Sections',
+            card_ai:'AI Chatbot', card_ai_d:'Artificial intelligence answers your Python questions',
+            card_editor:'Code Editor', card_editor_d:'Write and run Python code right in the browser',
+            card_lesson:'Lesson Flow', card_lesson_d:'Full theoretical materials and algorithms',
+            card_practice:'Practical Work', card_practice_d:'3-level code writing assignments',
+            card_test:'Test', card_test_d:'Test your Python knowledge',
+            card_video:'Video Lesson', card_video_d:'Visual multimedia lessons',
+            card_game:'Game', card_game_d:'Guess the number — logic mini-game',
+            card_blog:'Blog', card_blog_d:'Python news, tips, code examples',
+            card_faq:'FAQ', card_faq_d:'Frequently asked questions and answers',
+            card_reviews:'Reviews', card_reviews_d:'Student reviews and ratings',
+            card_glossary:'Glossary', card_glossary_d:'Python terms dictionary + search',
+            card_kmj:'Lesson Plan', card_kmj_d:'Short-term planning',
+        }
+    };
+
+    let currentLang = localStorage.getItem('lang') || 'kk';
+
+    function applyLang(lang) {
+        currentLang = lang;
+        localStorage.setItem('lang', lang);
+        const t = translations[lang];
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key]) el.innerHTML = t[key];
+        });
+        const labels = { kk:'ҚАЗ', ru:'РУС', en:'ENG' };
+        document.getElementById('langLabel').textContent = labels[lang];
+        document.querySelectorAll('.lang-option').forEach((o, i) => {
+            o.classList.toggle('active', ['kk','ru','en'][i] === lang);
+        });
+        document.getElementById('langPicker').classList.remove('open');
+    }
+
+    function setLang(lang) { applyLang(lang); }
+
+    function toggleLang() {
+        document.getElementById('langPicker').classList.toggle('open');
+    }
+
+    document.addEventListener('click', e => {
+        if (!document.getElementById('langPicker').contains(e.target)) {
+            document.getElementById('langPicker').classList.remove('open');
+        }
+    });
+
+    // Mobile menu
+    function toggleMobile() {
+        document.getElementById('mobileMenu').classList.toggle('open');
+    }
+
+    // Video modal
+    function openVideo() {
+        const m = document.getElementById('videoModal');
+        m.style.display = 'flex';
+    }
+    function closeVideo() {
+        const m = document.getElementById('videoModal');
+        m.style.display = 'none';
+        document.getElementById('modalVideo').pause();
+    }
+
+    // Card glow effect
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+            card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+        });
+    });
+
+    // Progress bar
+    window.addEventListener('scroll', () => {
+        const scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+        document.getElementById('progressBar').style.width = (scrolled || 0) + '%';
+    });
+
+    // Dark mode
+    const toggleBtn = document.getElementById('dark-mode-toggle');
+    const modeIcon = document.getElementById('mode-icon');
+    const body = document.body;
+    if (localStorage.getItem('dark-mode') !== 'disabled') { modeIcon.textContent = '☀️'; }
+    else { body.classList.add('light-mode'); modeIcon.textContent = '🌙'; }
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('light-mode');
+        if (body.classList.contains('light-mode')) { localStorage.setItem('dark-mode', 'disabled'); modeIcon.textContent = '🌙'; }
+        else { localStorage.setItem('dark-mode', 'enabled'); modeIcon.textContent = '☀️'; }
+    });
+
+    // Apply saved language
+    applyLang(currentLang);
+    </script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сабақ барысы: Толық теория</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .lesson-box { max-width: 900px; margin: 20px auto; }
+        .chapter-tag {
+            display: inline-block;
+            background: rgba(124,106,247,0.15);
+            color: var(--primary);
+            border: 1px solid rgba(124,106,247,0.3);
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .algorithm-type {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin: 12px 0;
+        }
+        .algorithm-type h4 {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .info-panel {
+            background: rgba(124,106,247,0.08);
+            border-left: 3px solid var(--primary);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+        .info-panel ul { list-style: none; padding: 0; }
+        .info-panel li {
+            padding: 6px 0;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+        .info-panel li::before {
+            content: '▸ ';
+            color: var(--primary);
+        }
+        .step-list {
+            counter-reset: steps;
+            list-style: none;
+            padding: 0;
+        }
+        .step-list li {
+            counter-increment: steps;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        .step-list li::before {
+            content: counter(steps);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <button class="dark-mode-toggle" id="dark-mode-toggle"><span id="mode-icon">☀️</span></button>
+
+    <header>
+        <div class="header-badge">● Теориялық материал</div>
+        <h1>Алгоритмдерді программалау</h1>
+        <p>7-сынып толық теория</p>
+    </header>
+
+    <div class="container">
+        <div class="lesson-box">
+            <div class="chapter-tag">01 — Алгоритм</div>
+            <h2>Алгоритм ұғымы және қасиеттері</h2>
+            <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.7; margin-bottom:20px;">
+                <strong style="color:var(--text)">Алгоритм</strong> — орындаушының алға қойған мақсатына жетуі үшін орындалатын іс-әрекеттердің реттелген тізбегі. Программалауда алгоритмді құру — код жазудың алғашқы әрі маңызды қадамы.
+            </p>
+            <div class="info-panel">
+                <strong style="color:var(--primary)">Алгоритмнің негізгі қасиеттері:</strong>
+                <ul>
+                    <li><strong>Дискреттілік:</strong> Алгоритм жекелеген қадамдардан тұруы тиіс.</li>
+                    <li><strong>Анықтылық:</strong> Әрбір қадам орындаушыға түсінікті болуы керек.</li>
+                    <li><strong>Нәтижелілік:</strong> Алгоритм міндетті түрде нәтиже беруі тиіс.</li>
+                    <li><strong>Жалпылық:</strong> Бір алгоритм бір типтес есептердің барлығын шеше алуы керек.</li>
+                </ul>
+            </div>
+
+            <div class="chapter-tag">02 — Python</div>
+            <h2>Python тілінің деректер типтері</h2>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Python-да жұмыс істеу үшін айнымалылармен танысу керек — бұл мәліметтерді сақтауға арналған атауы бар жад ұяшығы.</p>
+            
+            <table>
+                <tr><th>Деректер типі</th><th>Атауы</th><th>Мысалы</th></tr>
+                <tr><td>Бүтін сан</td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">int</code></td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">x = 10</code></td></tr>
+                <tr><td>Нақты сан</td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">float</code></td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">y = 15.5</code></td></tr>
+                <tr><td>Мәтін (жол)</td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">str</code></td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">name = "Python"</code></td></tr>
+                <tr><td>Логикалық</td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">bool</code></td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">True / False</code></td></tr>
+            </table>
+
+            <div class="chapter-tag">03 — Құрылымдар</div>
+            <h2>Алгоритм түрлері</h2>
+
+            <div class="algorithm-type">
+                <h4>А) Сызықтық алгоритм</h4>
+                <p style="color:var(--text-muted);font-size:0.9rem;">Командалар жазылу ретімен тізбектеліп орындалады. Ешқандай таңдау немесе қайталану жоқ.</p>
+                <code>a = int(input("Сан: "))
+b = int(input("Сан: "))
+print("Қосынды:", a + b)</code>
+            </div>
+
+            <div class="algorithm-type">
+                <h4>Ә) Тармақталған алгоритм</h4>
+                <p style="color:var(--text-muted);font-size:0.9rem;">Шарттың орындалуына байланысты алгоритм бірнеше бағытта өрбиді. <code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">if-elif-else</code> операторлары қолданылады.</p>
+                <code>if a > b:
+    print("a үлкен")
+elif a < b:
+    print("b үлкен")
+else:
+    print("тең")</code>
+            </div>
+
+            <div class="algorithm-type">
+                <h4>Б) Циклдік алгоритм</h4>
+                <p style="color:var(--text-muted);font-size:0.9rem;">Белгілі бір командалар жиынтығы бірнеше рет қайталанып орындалады.</p>
+                <code>for i in range(1, 11):
+    print(i)       # for цикл
+
+n = 1
+while n <= 10:
+    print(n)       # while цикл
+    n += 1</code>
+            </div>
+
+            <div class="chapter-tag">04 — Кезеңдер</div>
+            <h2>Программаны өңдеу кезеңдері</h2>
+            <ol class="step-list">
+                <li>Есептің қойылымы — не шешу керек екенін анықтау.</li>
+                <li>Алгоритмді құру — блок-схема немесе псевдокод жасау.</li>
+                <li>Кодты жазу — Python тілінде іске асыру.</li>
+                <li>Тестілеу — бағдарламаны сынап, қателерін түзету (debugging).</li>
+            </ol>
+
+            <div style="text-align:center; margin-top:40px;">
+                <a href="index.html" class="back-btn">← Басты бетке қайту</a>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>© 2024 Информатика пәні · Python 7-сынып</p></footer>
+
+    <script>
+        const toggleBtn = document.getElementById('dark-mode-toggle');
+        const modeIcon = document.getElementById('mode-icon');
+        const body = document.body;
+        if (localStorage.getItem('dark-mode') !== 'disabled') { modeIcon.textContent = '☀️'; }
+        else { body.classList.add('light-mode'); modeIcon.textContent = '🌙'; }
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            if (body.classList.contains('light-mode')) { localStorage.setItem('dark-mode', 'disabled'); modeIcon.textContent = '🌙'; }
+            else { localStorage.setItem('dark-mode', 'enabled'); modeIcon.textContent = '☀️'; }
+        });
+        window.addEventListener('scroll', () => {
+            const scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+    </script>
+</body>
+</html>

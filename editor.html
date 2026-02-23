@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Код Редактор — Браузерде</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .editor-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 1100px; margin: 0 auto; height: calc(100vh - 220px); min-height: 500px; }
+        @media(max-width:768px) { .editor-layout { grid-template-columns: 1fr; height: auto; } }
+        .editor-panel, .output-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; }
+        .panel-header { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: var(--surface2); }
+        .panel-title { font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; flex: 1; }
+        .run-btn { padding: 8px 20px; background: #4af7b0; color: #0a1a0a; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.82rem; font-family: 'Space Mono', monospace; transition: all 0.3s; display: flex; align-items: center; gap: 6px; }
+        .run-btn:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(74,247,176,0.4); }
+        .clear-btn { padding: 8px 14px; background: transparent; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.78rem; color: var(--text-muted); transition: all 0.2s; font-family: 'Space Mono', monospace; }
+        .clear-btn:hover { border-color: #f74a6a; color: #f74a6a; }
+        .code-editor {
+            flex: 1;
+            width: 100%;
+            background: #0a0a12;
+            color: #f8f8f2;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            padding: 20px;
+            border: none;
+            outline: none;
+            resize: none;
+            tab-size: 4;
+            box-sizing: border-box;
+        }
+        .output-area { flex: 1; padding: 18px; font-family: 'Space Mono', monospace; font-size: 0.83rem; line-height: 1.7; overflow-y: auto; white-space: pre-wrap; color: var(--text); }
+        .output-line { padding: 2px 0; }
+        .output-line.err { color: #f74a6a; }
+        .output-line.info { color: var(--text-muted); font-style: italic; }
+        .output-line.success { color: #4af7b0; }
+        .empty-state { color: var(--text-muted); text-align: center; padding: 40px 20px; font-family: 'Space Mono', monospace; font-size: 0.8rem; }
+        .examples-bar { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 18px; border-top: 1px solid var(--border); background: var(--surface2); }
+        .ex-btn { font-size: 0.7rem; padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text-muted); background: none; font-family: 'Space Mono', monospace; transition: all 0.2s; }
+        .ex-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .line-nums { color: #555; user-select: none; padding: 20px 12px 20px 20px; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.7; background: #0a0a12; border-right: 1px solid rgba(255,255,255,0.05); text-align: right; min-width: 40px; }
+        .editor-inner { display: flex; flex: 1; overflow: hidden; }
+        .input-prompt { color: #4af7b0; }
+    </style>
+</head>
+<body>
+    <div class="progress-bar"></div>
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo">🐍 PyLearn KZ</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Басты бет</a>
+            <a href="sabaq.html" class="nav-link">Сабақ</a>
+            <a href="practice.html" class="nav-link">Практика</a>
+            <a href="editor.html" class="nav-link active">Редактор</a>
+            <a href="chatbot.html" class="nav-link highlight">🤖 AI Чат</a>
+        </div>
+        <div class="nav-right">
+            <button class="dark-mode-toggle" id="dark-mode-toggle"><span id="mode-icon">☀️</span></button>
+            <button class="hamburger" onclick="document.getElementById('mobileMenu').classList.toggle('open')">☰</button>
+        </div>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html" class="nav-link">Басты бет</a>
+        <a href="editor.html" class="nav-link active">Редактор</a>
+        <a href="chatbot.html" class="nav-link highlight">🤖 AI Чат</a>
+    </div>
+
+    <header style="padding:40px 20px 30px;">
+        <div class="header-badge">● Браузерде Python</div>
+        <h1>Код Редактор</h1>
+        <p>Python кодын жаз және іске қос</p>
+    </header>
+
+    <div class="container" style="padding-bottom:40px;">
+        <div class="editor-layout">
+            <!-- Editor -->
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">⌨️ Python Editor</span>
+                    <button class="clear-btn" onclick="clearEditor()">Тазалау</button>
+                    <button class="run-btn" onclick="runCode()">▶ Іске қос</button>
+                </div>
+                <div class="editor-inner">
+                    <div class="line-nums" id="lineNums">1</div>
+                    <textarea class="code-editor" id="codeEditor" spellcheck="false"
+                        placeholder="# Python кодыңды осында жаз..."
+                        oninput="updateLineNums()" onkeydown="handleTab(event)">
+# Сәлем әлем!
+print("Сәлем, Қазақстан!")
+print("Python үйренемін 🐍")
+
+# Айнымалылар
+аты = "Python"
+нұсқасы = 3
+print(f"{аты} {нұсқасы} — тамаша тіл!")
+</textarea>
+                </div>
+                <div class="examples-bar">
+                    <span style="font-size:0.68rem;color:var(--text-muted);font-family:'Space Mono',monospace;align-self:center;">МЫСАЛДАР:</span>
+                    <button class="ex-btn" onclick="loadEx(0)">Сәлем</button>
+                    <button class="ex-btn" onclick="loadEx(1)">Цикл</button>
+                    <button class="ex-btn" onclick="loadEx(2)">Шарт</button>
+                    <button class="ex-btn" onclick="loadEx(3)">Функция</button>
+                    <button class="ex-btn" onclick="loadEx(4)">Математика</button>
+                    <button class="ex-btn" onclick="loadEx(5)">Сұрақ-жауап</button>
+                </div>
+            </div>
+
+            <!-- Output -->
+            <div class="output-panel">
+                <div class="panel-header">
+                    <span class="panel-title">📤 Нәтиже</span>
+                    <button class="clear-btn" onclick="clearOutput()">Тазалау</button>
+                </div>
+                <div class="output-area" id="outputArea">
+                    <div class="empty-state">▶ Кодты іске қосыңыз<br><br>Ctrl+Enter — жылдам іске қосу</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align:center;margin-top:20px;">
+            <a href="index.html" class="back-btn">← Басты бетке қайту</a>
+            &nbsp;&nbsp;
+            <a href="chatbot.html" class="back-btn" style="border-color:rgba(124,106,247,0.4);color:var(--primary);">🤖 AI Сұрау</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+    <script>
+    let pyodide = null;
+    let pyodideReady = false;
+
+    async function loadPyodide_() {
+        const out = document.getElementById('outputArea');
+        out.innerHTML = '<div class="output-line info">⏳ Python жүктелуде... бірнеше секунд күтіңіз</div>';
+        try {
+            pyodide = await loadPyodide();
+            pyodideReady = true;
+            out.innerHTML = '<div class="output-line success">✅ Python дайын! Кодыңызды іске қосыңыз.</div>';
+        } catch(e) {
+            out.innerHTML = `<div class="output-line info">ℹ️ Браузер Python (Pyodide) жүктей алмады.<br>Интернет байланысын тексеріңіз немесе <a href="chatbot.html" style="color:var(--primary);">AI Чатботты</a> пайдаланыңыз.</div>`;
+            useFallback();
+        }
+    }
+
+    // Fallback interpreter for basic Python
+    function useFallback() {
+        pyodideReady = 'fallback';
+    }
+
+    function runCode() {
+        const code = document.getElementById('codeEditor').value;
+        const out = document.getElementById('outputArea');
+
+        if (pyodideReady === true) {
+            out.innerHTML = '';
+            const lines = [];
+            pyodide.setStdout({ batched: (s) => lines.push({t:'out',v:s}) });
+            pyodide.setStderr({ batched: (s) => lines.push({t:'err',v:s}) });
+            try {
+                pyodide.runPython(code);
+                if (lines.length === 0) {
+                    out.innerHTML = '<div class="output-line info">✓ Код орындалды (шығару жоқ)</div>';
+                } else {
+                    out.innerHTML = lines.map(l => `<div class="output-line ${l.t==='err'?'err':''}">${escH(l.v)}</div>`).join('');
+                }
+            } catch(e) {
+                out.innerHTML = `<div class="output-line err">❌ Қате: ${escH(e.message)}</div>`;
+            }
+        } else if (pyodideReady === 'fallback') {
+            runFallback(code);
+        } else {
+            out.innerHTML = '<div class="output-line info">⏳ Python жүктелуде...</div>';
+        }
+    }
+
+    // Simple fallback: parse print() statements and basic operations
+    function runFallback(code) {
+        const out = document.getElementById('outputArea');
+        out.innerHTML = '';
+        const lines = code.split('\n');
+        const outputs = [];
+        const vars = {};
+        try {
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (!trimmed || trimmed.startsWith('#')) return;
+                // print()
+                const printM = trimmed.match(/^print\((.+)\)$/);
+                if (printM) {
+                    let val = printM[1].trim();
+                    val = val.replace(/f["'](.+?)["']/g, (_, s) => s.replace(/\{(\w+)\}/g, (__, v) => vars[v] ?? v));
+                    val = val.replace(/^["'](.+)["']$/, '$1');
+                    if (vars[val] !== undefined) val = vars[val];
+                    outputs.push({t:'out', v: String(val)});
+                    return;
+                }
+                // var assignment
+                const varM = trimmed.match(/^(\w+)\s*=\s*(.+)$/);
+                if (varM) {
+                    let v = varM[2].trim().replace(/^["'](.+)["']$/, '$1');
+                    if (!isNaN(v)) v = Number(v);
+                    vars[varM[1]] = v;
+                }
+            });
+            if (outputs.length === 0) {
+                out.innerHTML = '<div class="output-line info">ℹ️ Толық Python нәтижесі үшін Pyodide жүктелуін күтіңіз немесе желі байланысын тексеріңіз.</div>';
+            } else {
+                out.innerHTML = outputs.map(l => `<div class="output-line">${escH(String(l.v))}</div>`).join('');
+            }
+        } catch(e) {
+            out.innerHTML = `<div class="output-line err">Қате: ${escH(e.message)}</div>`;
+        }
+    }
+
+    function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function clearEditor() { document.getElementById('codeEditor').value = ''; updateLineNums(); }
+    function clearOutput() { document.getElementById('outputArea').innerHTML = '<div class="empty-state">▶ Кодты іске қосыңыз</div>'; }
+
+    function updateLineNums() {
+        const lines = document.getElementById('codeEditor').value.split('\n').length;
+        document.getElementById('lineNums').innerHTML = Array.from({length:lines}, (_,i) => i+1).join('<br>');
+    }
+
+    function handleTab(e) {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const ta = e.target;
+            const s = ta.selectionStart;
+            ta.value = ta.value.substring(0, s) + '    ' + ta.value.substring(ta.selectionEnd);
+            ta.selectionStart = ta.selectionEnd = s + 4;
+        }
+        if (e.key === 'Enter' && e.ctrlKey) runCode();
+    }
+
+    const examples = [
+        `# Сәлем, Қазақстан!
+print("Сәлем, Қазақстан!")
+print("Python үйренемін 🐍")
+аты = "Айгерім"
+print(f"Сәлем, {аты}!")`,
+        `# For цикл — 1-ден 10-ға дейін
+for i in range(1, 11):
+    print(f"{i} * 2 = {i * 2}")`,
+        `# If-else оператор
+сан = 42
+if сан > 0:
+    print(f"{сан} — оң сан")
+elif сан < 0:
+    print(f"{сан} — теріс сан")
+else:
+    print("Нөл!")`,
+        `# Функция
+def сәлемдесу(аты, жас):
+    print(f"Сәлем, {аты}! Жасыңыз: {жас}")
+    if жас < 18:
+        print("Сіз жас!")
+    else:
+        print("Сіз ересексіз!")
+
+сәлемдесу("Данияр", 14)
+сәлемдесу("Ерлан", 25)`,
+        `# Математика
+import math
+print(f"π = {math.pi:.4f}")
+print(f"√16 = {math.sqrt(16)}")
+print(f"2^10 = {2**10}")
+for i in range(1, 6):
+    print(f"{i}! = {math.factorial(i)}")`,
+        `# Пайдаланушыдан мәлімет алу
+# (Бұл мысалда мәні алдын ала берілген)
+аты = "Айгерім"   # input() симуляциясы
+жас = 14
+
+print(f"Аты: {аты}")
+print(f"Жасы: {жас}")
+if жас >= 0 and жас <= 17:
+    print("Мектеп оқушысы")`
+    ];
+
+    function loadEx(i) {
+        document.getElementById('codeEditor').value = examples[i];
+        updateLineNums();
+    }
+
+    // Dark mode
+    const toggleBtn = document.getElementById('dark-mode-toggle');
+    const modeIcon = document.getElementById('mode-icon');
+    const body = document.body;
+    if (localStorage.getItem('dark-mode') !== 'disabled') { modeIcon.textContent = '☀️'; }
+    else { body.classList.add('light-mode'); modeIcon.textContent = '🌙'; }
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('light-mode');
+        if (body.classList.contains('light-mode')) { localStorage.setItem('dark-mode', 'disabled'); modeIcon.textContent = '🌙'; }
+        else { localStorage.setItem('dark-mode', 'enabled'); modeIcon.textContent = '☀️'; }
+    });
+
+    updateLineNums();
+    loadPyodide_();
+    </script>
+</body>
+</html>

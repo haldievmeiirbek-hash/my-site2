@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>№1 Тапсырма Жауабы</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .answer-wrapper { max-width: 580px; margin: 0 auto; }
+        .answer-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: 3px solid #4af7b0;
+            border-radius: 20px;
+            padding: 36px;
+        }
+        .level-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(74,247,176,0.1); color: #4af7b0;
+            border: 1px solid rgba(74,247,176,0.3);
+            padding: 4px 14px; border-radius: 50px;
+            font-size: 0.7rem; font-family: 'Space Mono', monospace;
+            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px;
+        }
+        .ans-title { font-family: 'Unbounded', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+        .explanation { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-top: 16px; }
+        .exp-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+        .exp-code { font-family: 'Space Mono', monospace; color: var(--accent); font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <button class="dark-mode-toggle" id="dark-mode-toggle"><span id="mode-icon">☀️</span></button>
+    <header>
+        <div class="header-badge">● A деңгейі</div>
+        <h1>Тапсырма №1 жауабы</h1>
+        <p>Сәлемдесу бағдарламасы</p>
+    </header>
+    <div class="container">
+        <div class="answer-wrapper">
+            <div class="answer-card">
+                <div class="level-badge">● A деңгейі — Оңай</div>
+                <div class="ans-title">Сәлемдесу бағдарламасы</div>
+                <code>aty = input("Атыңыз кім?: ")
+print("Сәлем, " + aty + "!")</code>
+                <div class="explanation">
+                    <div class="exp-item"><span class="exp-code">input()</span><span style="color:var(--text-muted)">— пайдаланушыдан мәтін қабылдайды</span></div>
+                    <div class="exp-item"><span class="exp-code">+</span><span style="color:var(--text-muted)">— жолдарды біріктіру (конкатенация)</span></div>
+                    <div class="exp-item"><span class="exp-code">print()</span><span style="color:var(--text-muted)">— нәтижені экранға шығарады</span></div>
+                </div>
+            </div>
+            <div style="text-align:center; margin-top:24px;">
+                <a href="practice.html" class="back-btn">← Тапсырмаларға қайту</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        const toggleBtn = document.getElementById('dark-mode-toggle');
+        const modeIcon = document.getElementById('mode-icon');
+        const body = document.body;
+        if (localStorage.getItem('dark-mode') !== 'disabled') { modeIcon.textContent = '☀️'; }
+        else { body.classList.add('light-mode'); modeIcon.textContent = '🌙'; }
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            if (body.classList.contains('light-mode')) { localStorage.setItem('dark-mode', 'disabled'); modeIcon.textContent = '🌙'; }
+            else { localStorage.setItem('dark-mode', 'enabled'); modeIcon.textContent = '☀️'; }
+        });
+    </script>
+</body>
+</html>
