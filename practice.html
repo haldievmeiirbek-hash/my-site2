@@ -6,165 +6,309 @@
     <title>Практикалық жұмыс</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .task-grid { display: grid; gap: 20px; max-width: 800px; margin: 0 auto; }
-        .task-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 32px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s;
-        }
-        .task-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        }
-        .level-a { border-top: 3px solid #4af7b0; }
-        .level-b { border-top: 3px solid #f7c948; }
-        .level-c { border-top: 3px solid #f74a6a; }
+        .task-grid{display:grid;gap:22px;max-width:900px;margin:0 auto}
+        .task-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;position:relative;overflow:hidden;transition:all .3s}
+        .task-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.3)}
+        .level-a{border-top:3px solid #4af7b0}.level-b{border-top:3px solid #f7c948}.level-c{border-top:3px solid #f74a6a}
+        .level-tag{display:inline-flex;align-items:center;gap:6px;font-size:.68rem;font-family:'Space Mono',monospace;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:50px;margin-bottom:14px;font-weight:700}
+        .tag-a{background:rgba(74,247,176,.1);color:#4af7b0;border:1px solid rgba(74,247,176,.3)}
+        .tag-b{background:rgba(247,201,72,.1);color:#f7c948;border:1px solid rgba(247,201,72,.3)}
+        .tag-c{background:rgba(247,74,106,.1);color:#f74a6a;border:1px solid rgba(247,74,106,.3)}
+        .task-number{position:absolute;top:24px;right:28px;font-family:'Unbounded',sans-serif;font-size:2rem;font-weight:900;color:var(--border);line-height:1}
+        .task-title{font-family:'Unbounded',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:8px}
+        .task-desc{color:var(--text-muted);font-size:.88rem;line-height:1.6;margin-bottom:14px}
+        .task-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+        .open-editor-btn{display:inline-flex;align-items:center;gap:7px;background:var(--primary);border:none;padding:10px 20px;color:#fff;border-radius:10px;font-size:.83rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 14px rgba(124,106,247,.35);transition:all .3s;text-decoration:none}
+        .open-editor-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(124,106,247,.5)}
+        .hint-btn{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border);padding:9px 16px;color:var(--text-muted);border-radius:10px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .3s;text-decoration:none}
+        .hint-btn:hover{border-color:var(--primary);color:var(--primary)}
+        .expected{background:rgba(74,247,176,.05);border:1px dashed rgba(74,247,176,.25);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#4af7b0;font-family:'Space Mono',monospace;line-height:1.6}
+        .expected b{color:rgba(74,247,176,.7)}
 
-        .level-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.7rem;
-            font-family: 'Space Mono', monospace;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            padding: 4px 12px;
-            border-radius: 50px;
-            margin-bottom: 16px;
-            font-weight: 700;
-        }
-        .tag-a { background: rgba(74,247,176,0.1); color: #4af7b0; border: 1px solid rgba(74,247,176,0.3); }
-        .tag-b { background: rgba(247,201,72,0.1); color: #f7c948; border: 1px solid rgba(247,201,72,0.3); }
-        .tag-c { background: rgba(247,74,106,0.1); color: #f74a6a; border: 1px solid rgba(247,74,106,0.3); }
-
-        .task-number {
-            position: absolute;
-            top: 28px; right: 32px;
-            font-family: 'Unbounded', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--border);
-            line-height: 1;
-        }
-
-        .task-title {
-            font-family: 'Unbounded', sans-serif;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 10px;
-            letter-spacing: -0.5px;
-        }
-        .task-desc {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        .answer-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            padding: 10px 20px;
-            color: var(--text);
-            border-radius: 10px;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        .task-card.level-a .answer-btn:hover { background: rgba(74,247,176,0.2); border-color: #4af7b0; color: #4af7b0; }
-        .task-card.level-b .answer-btn:hover { background: rgba(247,201,72,0.2); border-color: #f7c948; color: #f7c948; }
-        .task-card.level-c .answer-btn:hover { background: rgba(247,74,106,0.2); border-color: #f74a6a; color: #f74a6a; }
-
-        .difficulty-dots {
-            display: flex; gap: 4px; margin-bottom: 16px;
-        }
-        .dot { width: 8px; height: 8px; border-radius: 50%; }
-        .dot-filled-a { background: #4af7b0; }
-        .dot-filled-b { background: #f7c948; }
-        .dot-filled-c { background: #f74a6a; }
-        .dot-empty { background: var(--border); }
+        /* INLINE EDITOR */
+        .inline-editor{display:none;margin-top:18px;border:1px solid var(--border);border-radius:14px;overflow:hidden;animation:edSlide .25s ease}
+        @keyframes edSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+        .inline-editor.open{display:block}
+        .ie-header{background:var(--surface2);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+        .ie-label{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase}
+        .ie-btns{display:flex;gap:8px;align-items:center}
+        .ie-run{padding:6px 16px;background:#4af7b0;color:#0a1a0a;border:none;border-radius:7px;cursor:pointer;font-weight:700;font-size:.75rem;font-family:'Space Mono',monospace;transition:all .2s}
+        .ie-run:hover{transform:scale(1.05);box-shadow:0 3px 10px rgba(74,247,176,.4)}
+        .ie-reset{padding:6px 12px;background:transparent;border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:.72rem;color:var(--text-muted);font-family:'Space Mono',monospace}
+        .ie-close{padding:6px 10px;background:transparent;border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:.78rem;color:var(--text-muted)}
+        .ie-body{display:grid;grid-template-columns:1fr 1fr}
+        @media(max-width:640px){.ie-body{grid-template-columns:1fr}}
+        .ie-code{width:100%;min-height:160px;background:#0a0a12;color:#f8f8f2;font-family:'Space Mono',monospace;font-size:.8rem;padding:14px;border:none;outline:none;resize:vertical;line-height:1.7;box-sizing:border-box;tab-size:4;border-right:1px solid var(--border)}
+        .ie-output{background:#050508;padding:14px;font-family:'Space Mono',monospace;font-size:.8rem;line-height:1.7;white-space:pre-wrap;overflow-y:auto;min-height:160px}
+        .ie-out-ok{color:#f8f8f2}.ie-out-err{color:#f74a6a}.ie-out-info{color:#666;font-style:italic}
+        .ie-status{display:flex;gap:6px;padding:8px 14px;background:var(--surface2);border-top:1px solid var(--border);font-size:.7rem;color:var(--text-muted);font-family:'Space Mono',monospace;align-items:center}
+        .status-dot{width:7px;height:7px;border-radius:50%}
     </style>
 </head>
 <body>
-    <div class="progress-bar" id="progressBar"></div>
-    <button class="dark-mode-toggle" id="dark-mode-toggle"><span id="mode-icon">☀️</span></button>
+<div class="progress-bar" id="progressBar"></div>
+<nav class="navbar">
+    <a href="index.html" class="nav-logo">🐍 PyLearn KZ</a>
+    <div class="nav-links">
+        <a href="index.html" class="nav-link">Басты бет</a>
+        <a href="sabaq.html" class="nav-link">Сабақ</a>
+        <a href="practice.html" class="nav-link active">Практика</a>
+        <a href="editor.html" class="nav-link">Редактор</a>
+        <a href="chatbot.html" class="nav-link highlight">🤖 AI Чат</a>
+    </div>
+    <div class="nav-right">
+        <button class="dark-mode-toggle" id="dmt"><span id="mi">☀️</span></button>
+        <button class="hamburger" onclick="document.getElementById('mm').classList.toggle('open')">☰</button>
+    </div>
+</nav>
+<div class="mobile-menu" id="mm">
+    <a href="index.html" class="nav-link">Басты бет</a>
+    <a href="practice.html" class="nav-link active">Практика</a>
+    <a href="chatbot.html" class="nav-link highlight">🤖 AI Чат</a>
+</div>
 
-    <header>
-        <div class="header-badge">● 3 Деңгей</div>
-        <h1>Практикалық жұмыс</h1>
-        <p>Кодты іс жүзінде қолданып үйрен</p>
-    </header>
+<header>
+    <div class="header-badge">● 3 Деңгей · Кодты тікелей жаз</div>
+    <h1>Практикалық жұмыс</h1>
+    <p>Тапсырманы тікелей осы бетте орындаңыз немесе толық редакторға өтіңіз</p>
+</header>
 
-    <div class="container">
-        <div class="task-grid">
-            <div class="task-card level-a">
-                <div class="task-number">01</div>
-                <div class="level-tag tag-a">● A деңгейі — Оңай</div>
-                <div class="difficulty-dots">
-                    <div class="dot dot-filled-a"></div>
-                    <div class="dot dot-empty"></div>
-                    <div class="dot dot-empty"></div>
-                </div>
-                <div class="task-title">Сәлемдесу</div>
-                <div class="task-desc">Пайдаланушыдан атын сұрап, оған <strong>"Сәлем, [аты]!"</strong> деп жауап беретін Python бағдарламасын жазыңыз. input() және print() функцияларын қолданыңыз.</div>
-                <a href="answer3.html" class="answer-btn">Жауабын көру →</a>
-            </div>
+<div class="container">
+<div class="task-grid">
 
-            <div class="task-card level-b">
-                <div class="task-number">02</div>
-                <div class="level-tag tag-b">● B деңгейі — Орташа</div>
-                <div class="difficulty-dots">
-                    <div class="dot dot-filled-b"></div>
-                    <div class="dot dot-filled-b"></div>
-                    <div class="dot dot-empty"></div>
-                </div>
-                <div class="task-title">Сандарды салыстыру</div>
-                <div class="task-desc">Екі бүтін сан енгізіледі. <strong>if-elif-else</strong> операторын пайдаланып, қайсысы үлкен екенін анықтайтын бағдарлама жазыңыз.</div>
-                <a href="answer4.html" class="answer-btn">Жауабын көру →</a>
-            </div>
-
-            <div class="task-card level-c">
-                <div class="task-number">03</div>
-                <div class="level-tag tag-c">● C деңгейі — Қиын</div>
-                <div class="difficulty-dots">
-                    <div class="dot dot-filled-c"></div>
-                    <div class="dot dot-filled-c"></div>
-                    <div class="dot dot-filled-c"></div>
-                </div>
-                <div class="task-title">For циклі</div>
-                <div class="task-desc"><strong>for</strong> циклін пайдаланып, пайдаланушы енгізген санның 1-ден 10-ға дейінгі көбейту кестесін шығаратын бағдарлама жазыңыз.</div>
-                <a href="answer5.html" class="answer-btn">Жауабын көру →</a>
+<!-- TASK 1 -->
+<div class="task-card level-a">
+    <div class="task-number">01</div>
+    <div class="level-tag tag-a">● A деңгейі — Оңай</div>
+    <div class="task-title">Сәлемдесу бағдарламасы</div>
+    <div class="task-desc">Пайдаланушыдан атын сұрап, оған <strong>"Сәлем, [аты]! Қош келдің!"</strong> деп жауап беретін бағдарлама жазыңыз. <code style="display:inline;padding:2px 6px;border-radius:4px;font-size:.78rem;background:rgba(255,255,255,.07)">input()</code> және <code style="display:inline;padding:2px 6px;border-radius:4px;font-size:.78rem;background:rgba(255,255,255,.07)">print()</code> функцияларын қолданыңыз.</div>
+    <div class="expected"><b>Күтілетін нәтиже:</b><br>Атыңыз: Айгерім<br>Сәлем, Айгерім! Қош келдің!</div>
+    <div class="task-actions">
+        <button class="open-editor-btn" onclick="toggleIE('ie1')">⌨️ Кодты осында жаз</button>
+        <a href="editor.html?task=1" class="hint-btn">↗ Толық редактор</a>
+        <a href="answer3.html" class="hint-btn">Жауабын көру</a>
+    </div>
+    <div class="inline-editor" id="ie1">
+        <div class="ie-header">
+            <span class="ie-label">📝 №1 тапсырма · Python</span>
+            <div class="ie-btns">
+                <button class="ie-reset" onclick="resetIE('ie1','code1')">↺ Бастапқы</button>
+                <button class="ie-run" onclick="runIE('ie1')">▶ Іске қос</button>
+                <button class="ie-close" onclick="toggleIE('ie1')">✕</button>
             </div>
         </div>
+        <div class="ie-body">
+            <textarea class="ie-code" id="ie1-code" onkeydown="ieKey(event,'ie1')"># Сәлемдесу бағдарламасы
+# (браузерде input() жоқ, мән беріп симуляция жасаймыз)
 
-        <div style="text-align:center; margin-top:40px;">
-            <a href="index.html" class="back-btn">← Басты бетке қайту</a>
+аты = "Айгерім"   # ← атты өзгертіп көр!
+print("Сәлем, " + аты + "! Қош келдің!")</textarea>
+            <div class="ie-output ie-out-info" id="ie1-out">▶ Іске қосыңыз...</div>
+        </div>
+        <div class="ie-status">
+            <div class="status-dot" id="ie1-dot" style="background:#666"></div>
+            <span id="ie1-stat">Дайын</span>
+            <span style="margin-left:auto">Ctrl+Enter — жылдам іске қосу</span>
         </div>
     </div>
+</div>
 
-    <script>
-        const toggleBtn = document.getElementById('dark-mode-toggle');
-        const modeIcon = document.getElementById('mode-icon');
-        const body = document.body;
-        if (localStorage.getItem('dark-mode') !== 'disabled') { modeIcon.textContent = '☀️'; }
-        else { body.classList.add('light-mode'); modeIcon.textContent = '🌙'; }
-        toggleBtn.addEventListener('click', () => {
-            body.classList.toggle('light-mode');
-            if (body.classList.contains('light-mode')) { localStorage.setItem('dark-mode', 'disabled'); modeIcon.textContent = '🌙'; }
-            else { localStorage.setItem('dark-mode', 'enabled'); modeIcon.textContent = '☀️'; }
+<!-- TASK 2 -->
+<div class="task-card level-b">
+    <div class="task-number">02</div>
+    <div class="level-tag tag-b">● B деңгейі — Орташа</div>
+    <div class="task-title">Сандарды салыстыру</div>
+    <div class="task-desc">Екі бүтін сан берілген. <strong>if-elif-else</strong> операторын пайдаланып, қайсысы үлкен немесе тең екенін анықтайтын бағдарлама жазыңыз.</div>
+    <div class="expected"><b>Күтілетін нәтиже:</b><br>a=15, b=8 → "15 үлкенірек"<br>a=7, b=7 → "Сандар тең"</div>
+    <div class="task-actions">
+        <button class="open-editor-btn" onclick="toggleIE('ie2')">⌨️ Кодты осында жаз</button>
+        <a href="editor.html" class="hint-btn">↗ Толық редактор</a>
+        <a href="answer4.html" class="hint-btn">Жауабын көру</a>
+    </div>
+    <div class="inline-editor" id="ie2">
+        <div class="ie-header">
+            <span class="ie-label">📝 №2 тапсырма · Python</span>
+            <div class="ie-btns">
+                <button class="ie-reset" onclick="resetIE('ie2','code2')">↺ Бастапқы</button>
+                <button class="ie-run" onclick="runIE('ie2')">▶ Іске қос</button>
+                <button class="ie-close" onclick="toggleIE('ie2')">✕</button>
+            </div>
+        </div>
+        <div class="ie-body">
+            <textarea class="ie-code" id="ie2-code" onkeydown="ieKey(event,'ie2')">a = 15
+b = 8
+
+# Осында кодыңды жаз:
+if a > b:
+    print(a, "үлкенірек")
+elif b > a:
+    print(b, "үлкенірек")
+else:
+    print("Сандар тең")</textarea>
+            <div class="ie-output ie-out-info" id="ie2-out">▶ Іске қосыңыз...</div>
+        </div>
+        <div class="ie-status">
+            <div class="status-dot" id="ie2-dot" style="background:#666"></div>
+            <span id="ie2-stat">Дайын</span>
+            <span style="margin-left:auto">Ctrl+Enter — жылдам іске қосу</span>
+        </div>
+    </div>
+</div>
+
+<!-- TASK 3 -->
+<div class="task-card level-c">
+    <div class="task-number">03</div>
+    <div class="level-tag tag-c">● C деңгейі — Қиын</div>
+    <div class="task-title">Көбейту кестесі</div>
+    <div class="task-desc"><strong>for</strong> циклін пайдаланып, берілген санның 1-ден 10-ға дейінгі көбейту кестесін шығаратын бағдарлама жазыңыз.</div>
+    <div class="expected"><b>Күтілетін нәтиже (san=5):</b><br>5 × 1 = 5<br>5 × 2 = 10 ... 5 × 10 = 50</div>
+    <div class="task-actions">
+        <button class="open-editor-btn" onclick="toggleIE('ie3')">⌨️ Кодты осында жаз</button>
+        <a href="editor.html" class="hint-btn">↗ Толық редактор</a>
+        <a href="answer5.html" class="hint-btn">Жауабын көру</a>
+    </div>
+    <div class="inline-editor" id="ie3">
+        <div class="ie-header">
+            <span class="ie-label">📝 №3 тапсырма · Python</span>
+            <div class="ie-btns">
+                <button class="ie-reset" onclick="resetIE('ie3','code3')">↺ Бастапқы</button>
+                <button class="ie-run" onclick="runIE('ie3')">▶ Іске қос</button>
+                <button class="ie-close" onclick="toggleIE('ie3')">✕</button>
+            </div>
+        </div>
+        <div class="ie-body">
+            <textarea class="ie-code" id="ie3-code" onkeydown="ieKey(event,'ie3')">san = 5   # ← санды өзгертіп көр!
+
+for i in range(1, 11):
+    print(san, "×", i, "=", san * i)</textarea>
+            <div class="ie-output ie-out-info" id="ie3-out">▶ Іске қосыңыз...</div>
+        </div>
+        <div class="ie-status">
+            <div class="status-dot" id="ie3-dot" style="background:#666"></div>
+            <span id="ie3-stat">Дайын</span>
+            <span style="margin-left:auto">Ctrl+Enter — жылдам іске қосу</span>
+        </div>
+    </div>
+</div>
+
+</div><!-- /task-grid -->
+
+<div style="text-align:center;margin-top:36px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <a href="editor.html" class="open-editor-btn" style="text-decoration:none">↗ Толық код редактор</a>
+    <a href="index.html" class="back-btn">← Басты бет</a>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+<script>
+let py=null,pyOk=false;
+const defaults={
+    ie1:`# Сәлемдесу бағдарламасы\nаты = "Айгерім"\nprint("Сәлем, " + аты + "! Қош келдің!")`,
+    ie2:`a = 15\nb = 8\n\nif a > b:\n    print(a, "үлкенірек")\nelif b > a:\n    print(b, "үлкенірек")\nelse:\n    print("Сандар тең")`,
+    ie3:`san = 5\n\nfor i in range(1, 11):\n    print(san, "×", i, "=", san * i)`
+};
+
+(async()=>{
+    try{ py=await loadPyodide(); pyOk=true; }
+    catch(e){ pyOk='fb'; }
+})();
+
+function toggleIE(id){
+    const el=document.getElementById(id);
+    el.classList.toggle('open');
+    if(el.classList.contains('open')) el.querySelector('.ie-code').focus();
+}
+
+function resetIE(id,codeId){
+    document.getElementById(id+'-code').value=defaults[id];
+    document.getElementById(id+'-out').textContent='▶ Іске қосыңыз...';
+    document.getElementById(id+'-out').className='ie-output ie-out-info';
+    setStat(id,'Бастапқы қалпына келтірілді','#f7c948');
+}
+
+function ieKey(e,id){
+    if(e.key==='Tab'){e.preventDefault();const t=e.target,s=t.selectionStart;t.value=t.value.substring(0,s)+'    '+t.value.substring(t.selectionEnd);t.selectionStart=t.selectionEnd=s+4;}
+    if(e.key==='Enter'&&e.ctrlKey) runIE(id);
+}
+
+function setStat(id,msg,color){
+    document.getElementById(id+'-dot').style.background=color;
+    document.getElementById(id+'-stat').textContent=msg;
+}
+
+function runIE(id){
+    const code=document.getElementById(id+'-code').value;
+    const outEl=document.getElementById(id+'-out');
+    setStat(id,'Орындалуда...','#f7c948');
+
+    if(pyOk===true){
+        outEl.textContent='';outEl.className='ie-output ie-out-ok';
+        const lines=[];
+        py.setStdout({batched:s=>lines.push({t:'ok',v:s})});
+        py.setStderr({batched:s=>lines.push({t:'err',v:s})});
+        try{
+            py.runPython(code);
+            if(!lines.length){outEl.textContent='✓ Код орындалды (шығару жоқ)';outEl.className='ie-output ie-out-info';}
+            else{outEl.innerHTML=lines.map(l=>`<div class="${l.t==='err'?'ie-out-err':'ie-out-ok'}">${esc(l.v)}</div>`).join('');}
+            setStat(id,'Сәтті орындалды ✓','#4af7b0');
+        }catch(e){
+            outEl.textContent='❌ Қате: '+e.message;outEl.className='ie-output ie-out-err';
+            setStat(id,'Қате!','#f74a6a');
+        }
+    } else {
+        const r=fbPy(code);
+        if(r.length){
+            outEl.innerHTML=r.map(x=>`<div class="${x.e?'ie-out-err':'ie-out-ok'}">${esc(x.v)}</div>`).join('');
+            outEl.className='ie-output';
+            setStat(id,'Орындалды (жеңілдетілген)','#f7c948');
+        } else {
+            outEl.textContent='⏳ Python жүктелуде... немесе Толық редакторды пайдаланыңыз';
+            outEl.className='ie-output ie-out-info';
+            setStat(id,'Жүктелуде...','#666');
+        }
+    }
+}
+
+function fbPy(code){
+    const out=[],vars={};
+    try{
+        code.split('\n').forEach(line=>{
+            const t=line.trim();
+            if(!t||t.startsWith('#'))return;
+            const pm=t.match(/^print\((.+)\)$/s);
+            if(pm){
+                let raw=pm[1];
+                // f-string
+                raw=raw.replace(/f["'](.+?)["']/g,(_,s)=>s.replace(/\{([^}]+)\}/g,(__,v)=>{const vt=v.trim();return vars[vt]!==undefined?vars[vt]:vt;}));
+                // join multiple args
+                const args=raw.split(/,(?![^(]*\))/g).map(a=>{
+                    let v=a.trim().replace(/^["'](.*)["']$/,'$1');
+                    return vars[v]!==undefined?vars[v]:v;
+                });
+                out.push({v:args.join(' ')});return;
+            }
+            const vm=t.match(/^(\w+)\s*=\s*(.+)$/);
+            if(vm){let v=vm[2].trim().replace(/^["'](.*)["']$/,'$1');if(!isNaN(v))v=Number(v);vars[vm[1]]=v;}
         });
-        window.addEventListener('scroll', () => {
-            const scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-            document.getElementById('progressBar').style.width = scrolled + '%';
-        });
-    </script>
+    }catch(e){out.push({v:e.message,e:true});}
+    return out;
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// dark mode
+const dmt=document.getElementById('dmt'),mi=document.getElementById('mi'),body=document.body;
+if(localStorage.getItem('dark-mode')!=='disabled'){mi.textContent='☀️';}
+else{body.classList.add('light-mode');mi.textContent='🌙';}
+dmt.addEventListener('click',()=>{
+    body.classList.toggle('light-mode');
+    if(body.classList.contains('light-mode')){localStorage.setItem('dark-mode','disabled');mi.textContent='🌙';}
+    else{localStorage.setItem('dark-mode','enabled');mi.textContent='☀️';}
+});
+window.addEventListener('scroll',()=>{
+    const s=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+    document.getElementById('progressBar').style.width=(s||0)+'%';
+});
+</script>
 </body>
 </html>
