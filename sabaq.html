@@ -3,188 +3,453 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Сабақ барысы: Толық теория</title>
+    <title>Сабақ барысы — Python алгоритмдер</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .lesson-box { max-width: 900px; margin: 20px auto; }
-        .chapter-tag {
-            display: inline-block;
-            background: rgba(124,106,247,0.15);
-            color: var(--primary);
-            border: 1px solid rgba(124,106,247,0.3);
-            padding: 4px 14px;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-family: 'Space Mono', monospace;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-        .algorithm-type {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px 24px;
-            margin: 12px 0;
-        }
-        .algorithm-type h4 {
-            color: var(--accent);
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-        }
-        .info-panel {
-            background: rgba(124,106,247,0.08);
-            border-left: 3px solid var(--primary);
-            padding: 20px 24px;
-            border-radius: 0 12px 12px 0;
-            margin: 20px 0;
-        }
-        .info-panel ul { list-style: none; padding: 0; }
-        .info-panel li {
-            padding: 6px 0;
-            color: var(--text);
-            font-size: 0.9rem;
-        }
-        .info-panel li::before {
-            content: '▸ ';
-            color: var(--primary);
-        }
-        .step-list {
-            counter-reset: steps;
-            list-style: none;
-            padding: 0;
-        }
-        .step-list li {
-            counter-increment: steps;
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
-        }
-        .step-list li::before {
-            content: counter(steps);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 32px;
-            height: 32px;
-            background: var(--primary);
-            color: white;
-            border-radius: 8px;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
+        .lesson-wrap{max-width:860px;margin:0 auto}
+        .lesson-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;position:sticky;top:68px;background:var(--bg);padding:12px 0;z-index:100;border-bottom:1px solid var(--border)}
+        .ln-btn{padding:7px 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text-muted);font-size:.75rem;cursor:pointer;font-family:'Space Mono',monospace;transition:all .2s;white-space:nowrap}
+        .ln-btn:hover,.ln-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
+        .section{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px;margin-bottom:20px;scroll-margin-top:140px}
+        .section h2{font-family:'Unbounded',sans-serif;font-size:1.05rem;color:var(--primary);margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+        .section h3{color:var(--accent);font-size:.95rem;margin:18px 0 8px;font-weight:700}
+        .section h4{color:var(--text);font-size:.88rem;margin:14px 0 6px;font-weight:600}
+        .section p{color:var(--text-muted);font-size:.88rem;line-height:1.8;margin-bottom:10px}
+        .section ul,.section ol{color:var(--text-muted);font-size:.88rem;line-height:1.8;padding-left:20px;margin-bottom:10px}
+        .section li{margin-bottom:4px}
+        .info-box{background:rgba(124,106,247,.07);border-left:3px solid var(--primary);padding:14px 18px;border-radius:0 12px 12px 0;margin:14px 0;font-size:.87rem;color:var(--text-muted);line-height:1.7}
+        .warn-box{background:rgba(247,201,72,.07);border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 12px 12px 0;margin:14px 0;font-size:.87rem;color:var(--text-muted);line-height:1.7}
+        .success-box{background:rgba(74,247,176,.07);border-left:3px solid #4af7b0;padding:14px 18px;border-radius:0 12px 12px 0;margin:14px 0;font-size:.87rem;color:var(--text-muted);line-height:1.7}
+        code{display:block;background:#0d0d14;color:#f8f8f2;padding:16px 18px;border-radius:12px;font-family:'Space Mono',monospace;font-size:.8rem;margin:12px 0;white-space:pre;border:1px solid rgba(255,255,255,.07);overflow-x:auto;line-height:1.7}
+        .kw{color:#ff79c6}.fn{color:#50fa7b}.st{color:#f1fa8c}.cm{color:#6272a4}.nb{color:#8be9fd}
+        .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+        @media(max-width:640px){.two-col{grid-template-columns:1fr}}
+        .mini-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px}
+        .mini-card h4{margin:0 0 6px;font-size:.85rem;color:var(--text)}
+        .mini-card p{margin:0;font-size:.8rem}
+        .type-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.83rem}
+        .type-table th{background:var(--primary);color:#fff;padding:10px 14px;text-align:left}
+        .type-table td{border:1px solid var(--border);padding:9px 14px;background:var(--surface2);color:var(--text-muted)}
+        .type-table tr:hover td{background:rgba(124,106,247,.08)}
+        .flow-diagram{display:flex;flex-direction:column;align-items:center;gap:0;margin:16px auto;max-width:320px}
+        .flow-box{background:var(--surface2);border:2px solid var(--border);border-radius:10px;padding:10px 20px;text-align:center;font-size:.82rem;font-weight:600;width:100%;box-sizing:border-box}
+        .flow-diamond{background:rgba(247,201,72,.1);border:2px solid var(--accent);transform:rotate(0);border-radius:6px;padding:10px 20px;text-align:center;font-size:.82rem;color:var(--accent);font-weight:700;width:100%;box-sizing:border-box}
+        .flow-arrow{font-size:1.2rem;color:var(--text-muted);margin:2px 0}
+        .algo-steps{counter-reset:step;list-style:none;padding:0}
+        .algo-steps li{counter-increment:step;display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);font-size:.87rem;color:var(--text-muted)}
+        .algo-steps li::before{content:counter(step);min-width:28px;height:28px;background:var(--primary);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;font-family:'Space Mono',monospace}
+        .try-btn{display:inline-flex;align-items:center;gap:7px;background:var(--primary);border:none;padding:9px 18px;color:#fff;border-radius:9px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(124,106,247,.3);transition:all .3s;text-decoration:none;margin-top:10px}
+        .try-btn:hover{transform:translateY(-2px)}
     </style>
 </head>
 <body>
-    <div class="progress-bar" id="progressBar"></div>
-    <button class="dark-mode-toggle" id="dark-mode-toggle"><span id="mode-icon">☀️</span></button>
+<div class="progress-bar" id="progressBar"></div>
+<nav class="navbar">
+    <a href="index.html" class="nav-logo">🐍 PyLearn KZ</a>
+    <div class="nav-links">
+        <a href="index.html" class="nav-link">Басты бет</a>
+        <a href="sabaq.html" class="nav-link active">Сабақ</a>
+        <a href="practice.html" class="nav-link">Практика</a>
+        <a href="editor.html" class="nav-link">Редактор</a>
+        <a href="chatbot.html" class="nav-link highlight">🤖 AI Чат</a>
+    </div>
+    <div class="nav-right">
+        <button class="dark-mode-toggle" id="dmt"><span id="mi">☀️</span></button>
+        <button class="hamburger" onclick="document.getElementById('mm').classList.toggle('open')">☰</button>
+    </div>
+</nav>
+<div class="mobile-menu" id="mm">
+    <a href="index.html" class="nav-link">Басты бет</a>
+    <a href="sabaq.html" class="nav-link active">Сабақ</a>
+    <a href="practice.html" class="nav-link">Практика</a>
+</div>
 
-    <header>
-        <div class="header-badge">● Теориялық материал</div>
-        <h1>Алгоритмдерді программалау</h1>
-        <p>7-сынып толық теория</p>
-    </header>
+<header>
+    <div class="header-badge">● 7 Бөлім · Толық курс</div>
+    <h1>Сабақ барысы</h1>
+    <p>Python алгоритмдерін программалау — 7-сынып</p>
+</header>
 
-    <div class="container">
-        <div class="lesson-box">
-            <div class="chapter-tag">01 — Алгоритм</div>
-            <h2>Алгоритм ұғымы және қасиеттері</h2>
-            <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.7; margin-bottom:20px;">
-                <strong style="color:var(--text)">Алгоритм</strong> — орындаушының алға қойған мақсатына жетуі үшін орындалатын іс-әрекеттердің реттелген тізбегі. Программалауда алгоритмді құру — код жазудың алғашқы әрі маңызды қадамы.
-            </p>
-            <div class="info-panel">
-                <strong style="color:var(--primary)">Алгоритмнің негізгі қасиеттері:</strong>
-                <ul>
-                    <li><strong>Дискреттілік:</strong> Алгоритм жекелеген қадамдардан тұруы тиіс.</li>
-                    <li><strong>Анықтылық:</strong> Әрбір қадам орындаушыға түсінікті болуы керек.</li>
-                    <li><strong>Нәтижелілік:</strong> Алгоритм міндетті түрде нәтиже беруі тиіс.</li>
-                    <li><strong>Жалпылық:</strong> Бір алгоритм бір типтес есептердің барлығын шеше алуы керек.</li>
-                </ul>
-            </div>
+<div class="container">
+<div class="lesson-wrap">
 
-            <div class="chapter-tag">02 — Python</div>
-            <h2>Python тілінің деректер типтері</h2>
-            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Python-да жұмыс істеу үшін айнымалылармен танысу керек — бұл мәліметтерді сақтауға арналған атауы бар жад ұяшығы.</p>
-            
-            <table>
-                <tr><th>Деректер типі</th><th>Атауы</th><th>Мысалы</th></tr>
-                <tr><td>Бүтін сан</td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">int</code></td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">x = 10</code></td></tr>
-                <tr><td>Нақты сан</td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">float</code></td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">y = 15.5</code></td></tr>
-                <tr><td>Мәтін (жол)</td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">str</code></td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">name = "Python"</code></td></tr>
-                <tr><td>Логикалық</td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">bool</code></td><td><code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">True / False</code></td></tr>
-            </table>
+<!-- STICKY NAV -->
+<div class="lesson-nav">
+    <button class="ln-btn active" onclick="goTo('s1',this)">1. Python негіздері</button>
+    <button class="ln-btn" onclick="goTo('s2',this)">2. Деректер типтері</button>
+    <button class="ln-btn" onclick="goTo('s3',this)">3. Операторлар</button>
+    <button class="ln-btn" onclick="goTo('s4',this)">4. Тармақталу</button>
+    <button class="ln-btn" onclick="goTo('s5',this)">5. Циклдер</button>
+    <button class="ln-btn" onclick="goTo('s6',this)">6. Функциялар</button>
+    <button class="ln-btn" onclick="goTo('s7',this)">7. Алгоритмдер</button>
+</div>
 
-            <div class="chapter-tag">03 — Құрылымдар</div>
-            <h2>Алгоритм түрлері</h2>
+<!-- SECTION 1 -->
+<div class="section" id="s1">
+    <h2>🐍 1. Python тілінің негіздері</h2>
+    <p>Python — 1991 жылы Гвидо ван Россум жасаған жоғары деңгейлі программалау тілі. Оның синтаксисі табиғи тілге жақын, сондықтан үйрену оңай.</p>
+    <div class="info-box">💡 <strong>Неліктен Python?</strong> Бүгінде Python Data Science, Sun Intelligence, Веб-разработка, автоматизация сияқты күрделі саларда кең қолданылады. Дүниежүзіндегі ең танымал тіл.</div>
 
-            <div class="algorithm-type">
-                <h4>А) Сызықтық алгоритм</h4>
-                <p style="color:var(--text-muted);font-size:0.9rem;">Командалар жазылу ретімен тізбектеліп орындалады. Ешқандай таңдау немесе қайталану жоқ.</p>
-                <code>a = int(input("Сан: "))
-b = int(input("Сан: "))
-print("Қосынды:", a + b)</code>
-            </div>
+    <h3>Python бағдарламасының құрылымы</h3>
+    <code><span class="cm"># Бұл — комментарий (Python орындамайды)</span>
+<span class="cm"># Бағдарламаның аты: Алғашқы бағдарлама</span>
 
-            <div class="algorithm-type">
-                <h4>Ә) Тармақталған алгоритм</h4>
-                <p style="color:var(--text-muted);font-size:0.9rem;">Шарттың орындалуына байланысты алгоритм бірнеше бағытта өрбиді. <code style="display:inline;padding:2px 8px;border-radius:4px;font-size:0.8rem;">if-elif-else</code> операторлары қолданылады.</p>
-                <code>if a > b:
-    print("a үлкен")
-elif a < b:
-    print("b үлкен")
-else:
-    print("тең")</code>
-            </div>
+<span class="fn">print</span>(<span class="st">"Сәлем, Қазақстан!"</span>)   <span class="cm"># экранға шығару</span>
+<span class="fn">print</span>(<span class="st">"Python үйренемін 🐍"</span>)</code>
 
-            <div class="algorithm-type">
-                <h4>Б) Циклдік алгоритм</h4>
-                <p style="color:var(--text-muted);font-size:0.9rem;">Белгілі бір командалар жиынтығы бірнеше рет қайталанып орындалады.</p>
-                <code>for i in range(1, 11):
-    print(i)       # for цикл
+    <h3>print() функциясы — деректерді шығару</h3>
+    <code><span class="fn">print</span>(<span class="st">"Мәтін"</span>)              <span class="cm"># жолды шығару</span>
+<span class="fn">print</span>(<span class="nb">42</span>)                  <span class="cm"># санды шығару</span>
+<span class="fn">print</span>(<span class="st">"Сан:"</span>, <span class="nb">42</span>)          <span class="cm"># бірнеше мән</span>
+<span class="fn">print</span>(<span class="st">"а ="</span>, <span class="nb">5</span>, <span class="st">"+"</span>, <span class="nb">3</span>, <span class="st">"="</span>, <span class="nb">5</span>+<span class="nb">3</span>)
+<span class="fn">print</span>()                    <span class="cm"># бос жол</span>
+<span class="fn">print</span>(<span class="st">"Бітті!"</span>, end=<span class="st">""</span>)    <span class="cm"># жол аудармай</span></code>
 
-n = 1
-while n <= 10:
-    print(n)       # while цикл
-    n += 1</code>
-            </div>
+    <h3>input() функциясы — деректерді енгізу</h3>
+    <code>аты = <span class="fn">input</span>(<span class="st">"Атыңызды енгізіңіз: "</span>)
+<span class="fn">print</span>(<span class="st">"Сәлем,"</span>, аты, <span class="st">"!"</span>)
 
-            <div class="chapter-tag">04 — Кезеңдер</div>
-            <h2>Программаны өңдеу кезеңдері</h2>
-            <ol class="step-list">
-                <li>Есептің қойылымы — не шешу керек екенін анықтау.</li>
-                <li>Алгоритмді құру — блок-схема немесе псевдокод жасау.</li>
-                <li>Кодты жазу — Python тілінде іске асыру.</li>
-                <li>Тестілеу — бағдарламаны сынап, қателерін түзету (debugging).</li>
-            </ol>
+жас = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Жасыңыз: "</span>))    <span class="cm"># санға айналдыру</span>
+<span class="fn">print</span>(<span class="st">"Сіз"</span>, жас, <span class="st">"жастасыз"</span>)</code>
 
-            <div style="text-align:center; margin-top:40px;">
-                <a href="index.html" class="back-btn">← Басты бетке қайту</a>
-            </div>
+    <div class="warn-box">⚠️ <strong>Маңызды:</strong> input() функциясы БАРЛЫҚ уақытта <strong>str</strong> (мәтін) типінде мән қайтарады. Сан керек болса int() немесе float() арқылы түрлендіру керек!</div>
+    <a href="editor.html" class="try-btn">⌨️ Редакторда жаздырып көр</a>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section" id="s2">
+    <h2>📦 2. Деректер типтері мен айнымалылар</h2>
+    <p>Айнымалы — белгілі бір мәнді сақтайтын "жәшік". Python-да айнымалының типін алдын ала анықтаудың қажеті жоқ.</p>
+
+    <table class="type-table">
+        <tr><th>Тип</th><th>Атауы</th><th>Мысал</th><th>Сипаттама</th></tr>
+        <tr><td><span style="color:#50fa7b">int</span></td><td>Бүтін сан</td><td>x = 42</td><td>-∞ ... +∞ бүтін сандар</td></tr>
+        <tr><td><span style="color:#8be9fd">float</span></td><td>Нақты сан</td><td>y = 3.14</td><td>Бөлшекті сандар</td></tr>
+        <tr><td><span style="color:#f1fa8c">str</span></td><td>Жол (мәтін)</td><td>s = "Сәлем"</td><td>Кез-келген мәтін</td></tr>
+        <tr><td><span style="color:#ff79c6">bool</span></td><td>Логикалық</td><td>b = True</td><td>True немесе False</td></tr>
+        <tr><td><span style="color:#f7c948">list</span></td><td>Тізім</td><td>a = [1,2,3]</td><td>Реттелген жиын</td></tr>
+    </table>
+
+    <h3>Айнымалы анықтау және пайдалану</h3>
+    <code>x = <span class="nb">10</span>           <span class="cm"># int</span>
+y = <span class="nb">3.14</span>         <span class="cm"># float</span>
+аты = <span class="st">"Python"</span>   <span class="cm"># str</span>
+дұрыс = <span class="kw">True</span>   <span class="cm"># bool</span>
+
+<span class="fn">print</span>(<span class="fn">type</span>(x))       <span class="cm"># &lt;class 'int'&gt;</span>
+<span class="fn">print</span>(<span class="fn">type</span>(аты))     <span class="cm"># &lt;class 'str'&gt;</span>
+
+<span class="cm"># Типтерді түрлендіру</span>
+сан = <span class="fn">int</span>(<span class="st">"42"</span>)        <span class="cm"># str → int</span>
+мәтін = <span class="fn">str</span>(<span class="nb">100</span>)       <span class="cm"># int → str</span>
+нақты = <span class="fn">float</span>(<span class="st">"3.14"</span>)  <span class="cm"># str → float</span></code>
+
+    <h3>f-string — форматталған жол</h3>
+    <code>аты = <span class="st">"Айгерім"</span>
+жас = <span class="nb">14</span>
+<span class="fn">print</span>(<span class="st">f"Сәлем, {аты}! Жасыңыз: {жас}"</span>)
+<span class="fn">print</span>(<span class="st">f"2 × 3 = {2 * 3}"</span>)
+<span class="fn">print</span>(<span class="st">f"π ≈ {3.14159:.2f}"</span>)  <span class="cm"># 2 ондық таңба</span></code>
+
+    <h3>Тізімдер (List)</h3>
+    <code>жемістер = [<span class="st">"алма"</span>, <span class="st">"алмұрт"</span>, <span class="st">"жүзім"</span>]
+сандар = [<span class="nb">1</span>, <span class="nb">2</span>, <span class="nb">3</span>, <span class="nb">4</span>, <span class="nb">5</span>]
+
+<span class="fn">print</span>(жемістер[<span class="nb">0</span>])        <span class="cm"># алма (индекс 0-дан басталады)</span>
+<span class="fn">print</span>(<span class="fn">len</span>(жемістер))      <span class="cm"># 3 (ұзындық)</span>
+жемістер.append(<span class="st">"банан"</span>) <span class="cm"># соңына қосу</span>
+<span class="fn">print</span>(жемістер)</code>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section" id="s3">
+    <h2>➕ 3. Операторлар</h2>
+
+    <div class="two-col">
+        <div class="mini-card">
+            <h4>Арифметикалық операторлар</h4>
+            <code style="margin:6px 0;padding:10px">a + b   <span class="cm"># қосу</span>
+a - b   <span class="cm"># азайту</span>
+a * b   <span class="cm"># көбейту</span>
+a / b   <span class="cm"># бөлу (float)</span>
+a // b  <span class="cm"># бүтін бөлу</span>
+a % b   <span class="cm"># қалдықты табу</span>
+a ** b  <span class="cm"># дәрежеге</span></code>
+        </div>
+        <div class="mini-card">
+            <h4>Салыстыру операторлары</h4>
+            <code style="margin:6px 0;padding:10px">a == b  <span class="cm"># тең</span>
+a != b  <span class="cm"># тең емес</span>
+a > b   <span class="cm"># үлкен</span>
+a < b   <span class="cm"># кіші</span>
+a >= b  <span class="cm"># үлкен немесе тең</span>
+a <= b  <span class="cm"># кіші немесе тең</span></code>
         </div>
     </div>
 
-    <footer><p>© 2024 Информатика пәні · Python 7-сынып</p></footer>
+    <div class="two-col">
+        <div class="mini-card">
+            <h4>Логикалық операторлар</h4>
+            <code style="margin:6px 0;padding:10px"><span class="kw">and</span>  <span class="cm"># екеуі де True</span>
+<span class="kw">or</span>   <span class="cm"># кем дегенде бірі</span>
+<span class="kw">not</span>  <span class="cm"># керісінше</span>
 
-    <script>
-        const toggleBtn = document.getElementById('dark-mode-toggle');
-        const modeIcon = document.getElementById('mode-icon');
-        const body = document.body;
-        if (localStorage.getItem('dark-mode') !== 'disabled') { modeIcon.textContent = '☀️'; }
-        else { body.classList.add('light-mode'); modeIcon.textContent = '🌙'; }
-        toggleBtn.addEventListener('click', () => {
-            body.classList.toggle('light-mode');
-            if (body.classList.contains('light-mode')) { localStorage.setItem('dark-mode', 'disabled'); modeIcon.textContent = '🌙'; }
-            else { localStorage.setItem('dark-mode', 'enabled'); modeIcon.textContent = '☀️'; }
-        });
-        window.addEventListener('scroll', () => {
-            const scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-            document.getElementById('progressBar').style.width = scrolled + '%';
-        });
-    </script>
+x > 0 <span class="kw">and</span> x < 10
+y == 0 <span class="kw">or</span> y == 5</code>
+        </div>
+        <div class="mini-card">
+            <h4>Меншіктеу операторлары</h4>
+            <code style="margin:6px 0;padding:10px">x = <span class="nb">5</span>
+x += <span class="nb">3</span>  <span class="cm"># x = x + 3 = 8</span>
+x -= <span class="nb">2</span>  <span class="cm"># x = x - 2 = 6</span>
+x *= <span class="nb">2</span>  <span class="cm"># x = x * 2 = 12</span>
+x //= <span class="nb">4</span> <span class="cm"># x = x // 4 = 3</span></code>
+        </div>
+    </div>
+
+    <h3>Практикалық мысал</h3>
+    <code>a, b = <span class="nb">17</span>, <span class="nb">5</span>
+<span class="fn">print</span>(<span class="st">f"{a} + {b} = {a+b}"</span>)
+<span class="fn">print</span>(<span class="st">f"{a} // {b} = {a//b}"</span>)   <span class="cm"># бүтін бөлу: 3</span>
+<span class="fn">print</span>(<span class="st">f"{a} % {b} = {a%b}"</span>)    <span class="cm"># қалдық: 2</span>
+<span class="fn">print</span>(<span class="st">f"2^10 = {2**10}"</span>)        <span class="cm"># 1024</span>
+
+<span class="cm"># Математика модулі</span>
+<span class="kw">import</span> math
+<span class="fn">print</span>(<span class="fn">math.sqrt</span>(<span class="nb">16</span>))    <span class="cm"># 4.0</span>
+<span class="fn">print</span>(<span class="fn">math.pi</span>)          <span class="cm"># 3.14159...</span>
+<span class="fn">print</span>(<span class="fn">math.factorial</span>(<span class="nb">5</span>)) <span class="cm"># 120</span></code>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section" id="s4">
+    <h2>🔀 4. Тармақталған алгоритм (if-elif-else)</h2>
+    <p>Тармақталған алгоритм — бағдарлама белгілі шартқа байланысты әртүрлі жолмен орындалады.</p>
+
+    <div class="flow-diagram">
+        <div class="flow-box">Бастау</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-diamond">Шарт тексеру</div>
+        <div class="flow-arrow">↙ Ия &nbsp;&nbsp;&nbsp; Жоқ ↘</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;width:100%">
+            <div class="flow-box" style="font-size:.75rem">if блогы орындалады</div>
+            <div class="flow-box" style="font-size:.75rem">else блогы орындалады</div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box">Аяқтау</div>
+    </div>
+
+    <h3>if-elif-else синтаксисі</h3>
+    <code>жас = <span class="nb">15</span>
+
+<span class="kw">if</span> жас < <span class="nb">7</span>:
+    <span class="fn">print</span>(<span class="st">"Мектепке дейінгі"</span>)
+<span class="kw">elif</span> жас <= <span class="nb">11</span>:
+    <span class="fn">print</span>(<span class="st">"Бастауыш мектеп"</span>)
+<span class="kw">elif</span> жас <= <span class="nb">15</span>:
+    <span class="fn">print</span>(<span class="st">"Орта буын"</span>)
+<span class="kw">elif</span> жас <= <span class="nb">18</span>:
+    <span class="fn">print</span>(<span class="st">"Жоғары сынып"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="st">"Ересек"</span>)</code>
+
+    <h3>Күрделі шарттар</h3>
+    <code>x = <span class="nb">7</span>
+<span class="cm"># and — екі шарт бірдей орындалуы керек</span>
+<span class="kw">if</span> x > <span class="nb">0</span> <span class="kw">and</span> x < <span class="nb">10</span>:
+    <span class="fn">print</span>(<span class="st">"0-ден 10-ға дейін"</span>)
+
+<span class="cm"># or — кем дегенде бір шарт</span>
+<span class="kw">if</span> x == <span class="nb">0</span> <span class="kw">or</span> x == <span class="nb">7</span>:
+    <span class="fn">print</span>(<span class="st">"Нөл немесе жеті"</span>)
+
+<span class="cm"># Ішкі (nested) if</span>
+баға = <span class="nb">85</span>
+<span class="kw">if</span> баға >= <span class="nb">90</span>:
+    <span class="fn">print</span>(<span class="st">"A — Үздік"</span>)
+<span class="kw">elif</span> баға >= <span class="nb">75</span>:
+    <span class="fn">print</span>(<span class="st">"B — Жақсы"</span>)
+<span class="kw">elif</span> баға >= <span class="nb">50</span>:
+    <span class="fn">print</span>(<span class="st">"C — Қанағаттанарлық"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="st">"F — Қайта тапсыру"</span>)</code>
+    <a href="practice.html" class="try-btn">💪 Тапсырмаларды орында</a>
+</div>
+
+<!-- SECTION 5 -->
+<div class="section" id="s5">
+    <h2>🔄 5. Циклдер (for және while)</h2>
+    <p>Цикл — бір немесе бірнеше операторды белгілі рет немесе шарт орындалғанша қайталайды.</p>
+
+    <h3>For цикл — белгілі рет қайталау</h3>
+    <code><span class="cm"># range() — сан тізбегі жасайды</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nb">5</span>):
+    <span class="fn">print</span>(i)  <span class="cm"># 0, 1, 2, 3, 4</span>
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nb">1</span>, <span class="nb">6</span>):
+    <span class="fn">print</span>(i)  <span class="cm"># 1, 2, 3, 4, 5</span>
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nb">0</span>, <span class="nb">20</span>, <span class="nb">5</span>):
+    <span class="fn">print</span>(i)  <span class="cm"># 0, 5, 10, 15 (қадам=5)</span>
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nb">10</span>, <span class="nb">0</span>, -<span class="nb">1</span>):
+    <span class="fn">print</span>(i)  <span class="cm"># 10-нан 1-ге кері санау</span></code>
+
+    <h3>Тізіммен жұмыс</h3>
+    <code>жемістер = [<span class="st">"алма"</span>, <span class="st">"алмұрт"</span>, <span class="st">"жүзім"</span>, <span class="st">"банан"</span>]
+
+<span class="kw">for</span> жеміс <span class="kw">in</span> жемістер:
+    <span class="fn">print</span>(<span class="st">f"{жеміс} — дәмді!"</span>)
+
+<span class="cm"># enumerate — индекс пен мән бірге</span>
+<span class="kw">for</span> i, жеміс <span class="kw">in</span> <span class="fn">enumerate</span>(жемістер, <span class="nb">1</span>):
+    <span class="fn">print</span>(<span class="st">f"{i}. {жеміс}"</span>)</code>
+
+    <h3>While цикл — шарт орындалғанша</h3>
+    <code>n = <span class="nb">1</span>
+<span class="kw">while</span> n <= <span class="nb">5</span>:
+    <span class="fn">print</span>(<span class="st">f"{n} × {n} = {n*n}"</span>)
+    n += <span class="nb">1</span>
+
+<span class="cm"># break және continue</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nb">10</span>):
+    <span class="kw">if</span> i == <span class="nb">3</span>: <span class="kw">continue</span>  <span class="cm"># 3-ті өткізіп жіберу</span>
+    <span class="kw">if</span> i == <span class="nb">7</span>: <span class="kw">break</span>     <span class="cm"># 7-де тоқтату</span>
+    <span class="fn">print</span>(i)  <span class="cm"># 0,1,2,4,5,6</span></code>
+
+    <h3>Кірістірілген циклдер (nested loops)</h3>
+    <code><span class="cm"># Жұлдыз үлгісі</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nb">1</span>, <span class="nb">6</span>):
+    <span class="fn">print</span>(<span class="st">"★"</span> * i)
+
+<span class="cm"># Көбейту кестесі</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nb">1</span>, <span class="nb">4</span>):
+    <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="nb">1</span>, <span class="nb">4</span>):
+        <span class="fn">print</span>(<span class="st">f"{i}×{j}={i*j}"</span>, end=<span class="st">"  "</span>)
+    <span class="fn">print</span>()  <span class="cm"># жаңа жол</span></code>
+    <a href="practice.html" class="try-btn">💪 Практикада қолдан</a>
+</div>
+
+<!-- SECTION 6 -->
+<div class="section" id="s6">
+    <h2>⚙️ 6. Функциялар (def)</h2>
+    <p>Функция — бір немесе бірнеше операцияны атаулы блокқа топтастырады. Кодты қайталамауға (DRY принципі) мүмкіндік береді.</p>
+
+    <h3>Функция анықтау және шақыру</h3>
+    <code><span class="cm"># Анықтау</span>
+<span class="kw">def</span> <span class="fn">сәлемдесу</span>(аты):
+    <span class="fn">print</span>(<span class="st">f"Сәлем, {аты}! 👋"</span>)
+
+<span class="cm"># Шақыру</span>
+<span class="fn">сәлемдесу</span>(<span class="st">"Айгерім"</span>)
+<span class="fn">сәлемдесу</span>(<span class="st">"Данияр"</span>)
+<span class="fn">сәлемдесу</span>(<span class="st">"Нұрлан"</span>)</code>
+
+    <h3>Мән қайтаратын функция (return)</h3>
+    <code><span class="kw">def</span> <span class="fn">аудан_есептеу</span>(ұзындық, ені):
+    аудан = ұзындық * ені
+    <span class="kw">return</span> аудан
+
+<span class="kw">def</span> <span class="fn">максимум</span>(a, b):
+    <span class="kw">if</span> a > b:
+        <span class="kw">return</span> a
+    <span class="kw">return</span> b
+
+нәтиже = <span class="fn">аудан_есептеу</span>(<span class="nb">5</span>, <span class="nb">3</span>)
+<span class="fn">print</span>(<span class="st">f"Ауданы: {нәтиже} м²"</span>)
+<span class="fn">print</span>(<span class="st">f"Максимум: {<span class="fn">максимум</span>(12, 7)}"</span>)</code>
+
+    <h3>Әдепкі мән (default parameter)</h3>
+    <code><span class="kw">def</span> <span class="fn">таныстыру</span>(аты, жас=<span class="nb">14</span>, қала=<span class="st">"Алматы"</span>):
+    <span class="fn">print</span>(<span class="st">f"{аты}, {жас} жас, {қала}"</span>)
+
+<span class="fn">таныстыру</span>(<span class="st">"Айгерім"</span>)            <span class="cm"># Айгерім, 14 жас, Алматы</span>
+<span class="fn">таныстыру</span>(<span class="st">"Данияр"</span>, <span class="nb">15</span>)        <span class="cm"># Данияр, 15 жас, Алматы</span>
+<span class="fn">таныстыру</span>(<span class="st">"Нұрлан"</span>, <span class="nb">13</span>, <span class="st">"Астана"</span>) <span class="cm"># Нұрлан, 13 жас, Астана</span></code>
+</div>
+
+<!-- SECTION 7 -->
+<div class="section" id="s7">
+    <h2>🗺️ 7. Алгоритмдер туралы</h2>
+    <p>Алгоритм — белгілі бір есепті шешу үшін орындалатын нақты нұсқаулар тізбегі.</p>
+
+    <div class="success-box">✅ <strong>Алгоритмнің қасиеттері:</strong> Дискреттілік (қадамдарға бөлінген) · Нақтылық (анық нұсқаулар) · Нәтижелілік (аяқталу) · Жаппайлылық (кез-келген деректерге)</div>
+
+    <h3>Алгоритм түрлері</h3>
+    <div class="two-col">
+        <div class="mini-card">
+            <h4>🔁 Сызықтық алгоритм</h4>
+            <p>Нұсқаулар бірінен кейін бірі тізбектей орындалады. Тармақталу жоқ.</p>
+        </div>
+        <div class="mini-card">
+            <h4>🔀 Тармақталған алгоритм</h4>
+            <p>Шартқа байланысты бағдарлама әртүрлі жолмен орындалады (if-else).</p>
+        </div>
+        <div class="mini-card">
+            <h4>🔄 Циклдік алгоритм</h4>
+            <p>Нұсқаулар тобы белгілі рет немесе шарт орындалғанша қайталанады.</p>
+        </div>
+        <div class="mini-card">
+            <h4>🧩 Рекурсивті алгоритм</h4>
+            <p>Функция өзін-өзі шақырады. Factorial, Fibonacci есептеу.</p>
+        </div>
+    </div>
+
+    <h3>Тәжірибелік алгоритм: Максималды санды табу</h3>
+    <ul class="algo-steps">
+        <li>Бастапқы максимумды бірінші элементке тең деп аламыз</li>
+        <li>Тізімдегі әр элементті максимуммен салыстырамыз</li>
+        <li>Егер элемент максимумнан үлкен болса — жаңа максимум деп саламыз</li>
+        <li>Тізімнің соңына жеткенде максимумды шығарамыз</li>
+    </ul>
+    <code><span class="kw">def</span> <span class="fn">максималды_табу</span>(тізім):
+    макс = тізім[<span class="nb">0</span>]
+    <span class="kw">for</span> сан <span class="kw">in</span> тізім:
+        <span class="kw">if</span> сан > макс:
+            макс = сан
+    <span class="kw">return</span> макс
+
+сандар = [<span class="nb">3</span>, <span class="nb">17</span>, <span class="nb">8</span>, <span class="nb">42</span>, <span class="nb">5</span>, <span class="nb">1</span>]
+<span class="fn">print</span>(<span class="st">f"Максималды сан: {<span class="fn">максималды_табу</span>(сандар)}"</span>)  <span class="cm"># 42</span></code>
+
+    <h3>Іздеу алгоритмі (Linear Search)</h3>
+    <code><span class="kw">def</span> <span class="fn">сызықтық_іздеу</span>(тізім, мақсат):
+    <span class="kw">for</span> i, мән <span class="kw">in</span> <span class="fn">enumerate</span>(тізім):
+        <span class="kw">if</span> мән == мақсат:
+            <span class="kw">return</span> i  <span class="cm"># индексін қайтару</span>
+    <span class="kw">return</span> -<span class="nb">1</span>   <span class="cm"># табылмаса</span>
+
+сандар = [<span class="nb">10</span>, <span class="nb">25</span>, <span class="nb">3</span>, <span class="nb">47</span>, <span class="nb">8</span>]
+нәтиже = <span class="fn">сызықтық_іздеу</span>(сандар, <span class="nb">47</span>)
+<span class="fn">print</span>(<span class="st">f"47 саны {нәтиже}-індексте орналасқан"</span>)  <span class="cm"># 3</span></code>
+    <a href="practice.html" class="try-btn">💪 Тапсырмаларды орында</a>
+</div>
+
+</div><!-- /lesson-wrap -->
+<div style="text-align:center;margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <a href="practice.html" style="display:inline-flex;align-items:center;gap:7px;background:var(--primary);color:#fff;padding:12px 24px;border-radius:50px;text-decoration:none;font-weight:700;font-size:.875rem">💪 Практикаға өту →</a>
+    <a href="index.html" class="back-btn">← Басты бет</a>
+</div>
+</div>
+
+<script>
+function goTo(id,btn){
+    document.getElementById(id).scrollIntoView({behavior:'smooth'});
+    document.querySelectorAll('.ln-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+}
+const dmt=document.getElementById('dmt'),mi=document.getElementById('mi'),body=document.body;
+if(localStorage.getItem('dark-mode')!=='disabled'){mi.textContent='☀️';}
+else{body.classList.add('light-mode');mi.textContent='🌙';}
+dmt.addEventListener('click',()=>{
+    body.classList.toggle('light-mode');
+    if(body.classList.contains('light-mode')){localStorage.setItem('dark-mode','disabled');mi.textContent='🌙';}
+    else{localStorage.setItem('dark-mode','enabled');mi.textContent='☀️';}
+});
+window.addEventListener('scroll',()=>{
+    const s=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+    document.getElementById('progressBar').style.width=(s||0)+'%';
+});
+</script>
 </body>
 </html>
